@@ -21,7 +21,7 @@ var year = 2020;
                 i++;
                 if (i == j) {
                     // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
-                    download_file("Calendar.ics", calendar);
+                    download_file("Calendar.ics", calendar+"END:VCALENDAR");
                 }
             }
         });
@@ -96,7 +96,7 @@ function extractData(courseData) {
     //     title = "תרגול: " + courseId + " -- " + courseName;
     //     iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
     // }
-    return iCalEvent+"END:VCALENDAR";
+    return iCalEvent;
 }
 
 
