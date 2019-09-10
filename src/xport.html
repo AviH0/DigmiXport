@@ -2,28 +2,12 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>Title</title>
+    <title>DigmiXport</title>
+    <script src="popup.js"></script>
 
 </head>
 <body>
-<title>Title</title>
 <button id="btn_save" title="Export" name="Export">Export Digmi Calendar</button>
 </body>
-
-<script>
-
-    document.getElementById("btn_save").setAttribute("onClick", "load()");
-    function load() {
-        chrome.tabs.executeScript({'file': 'xport.js'});
-        // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
-        // browser.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
-        // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
-        // browser.tabs.executeScript({'file': 'codebase/dhtmlxscheduler.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_pdf.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_serialize.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_tooltip.js'});
-        // browser.tabs.executeScript({'file': 'huji.js'});
-    }
-</script>
 
 </html>
