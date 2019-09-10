@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "HujiDigmiXport",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Adds a browser action icon to the toolbar.",
   "icons": {
     "48": "icons/clock.png"
