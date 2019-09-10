@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "HujiDigmiXport",
+  "version": "1.0",
+  "description": "Adds a browser action icon to the toolbar.",
+  "icons": {
+    "48": "icons/clock.png"
+  },
+  "content_scripts":[
+    {
+      "matches": ["https://www.digmi.org/*"],
+      "js": ["jquery-3.4.1.min.js","http_ajax.googleapis.com_ajax_libs_jqueryui_1.8.18_jquery-ui.js","jquery.cookie.js"]
+    }],
+  "permissions": [
+    "cookies",
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "<all_urls>"
+  ],
+  "browser_action": {
+    "default_icon": "icons/clock.png",
+    "default_title": "DigmiXport",
+    "default_popup": "xport.html"
+  }
+}
