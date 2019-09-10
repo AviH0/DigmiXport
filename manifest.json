@@ -6,11 +6,6 @@
   "icons": {
     "48": "src/icons/clock.png"
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "update_url": "https://raw.githubusercontent.com/AviH0/DigmiXport/master/updates.json"
-    }
-  },
   "content_scripts":[
     {
       "matches": ["https://www.digmi.org/*"],
