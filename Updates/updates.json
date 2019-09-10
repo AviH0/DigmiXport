@@ -33,6 +33,10 @@
         {
           "version": "1.2.5",
           "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.2.5/hujidigmixport-1.2.5-fx.xpi"
+        },
+        {
+          "version": "1.2.6",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.2.6/hujidigmixport-1.2.6-fx.xpi"
         }
 
 
@@ -71,6 +75,10 @@
         {
           "version": "1.2.5",
           "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.2.5/hujidigmixport-1.2.5-fx.xpi"
+        },
+        {
+          "version": "1.2.6",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.2.6/hujidigmixport-1.2.6-fx.xpi"
         }
       ]
     }
