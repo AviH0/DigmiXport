@@ -1,7 +1,8 @@
 var year = 2020;
 exportCal();
 function exportCal () {
-    if(document.documentURI != "https://www.digmi.org/huji/"){
+    if(document.documentURI != "https://www.digmi.org/huji/" && document.documentURI != "https://digmi.org/huji/"){
+        alert(document.documentURI);
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
