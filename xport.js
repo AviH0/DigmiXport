@@ -1,7 +1,7 @@
 var year = 2020;
 
 (function () {
-    if (document.documentURI != "https://www.digmi.org/huji/") {
+    if (!document.documentURI.startsWith("https://www.digmi.org/huji/")) {
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
@@ -30,6 +30,10 @@ var year = 2020;
 
 })();
 
+function getId() {
+
+    cookies_cour = JSON.parse($.cookie(id + '_courses'));
+}
 
 function extractData(courseData) {
     var courseId = courseData.id;
