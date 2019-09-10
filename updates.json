@@ -2,14 +2,27 @@
   "addons": {
     "{b143720d-78c9-4b1e-9ad1-520459021274}": {
       "updates": [
-        { "version": "1.0",
-          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.0/hujidigmixport-1.0-fx.xpi" }
+        {
+          "version": "1.0",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.0/hujidigmixport-1.0-fx.xpi"
+        },
+        {
+          "version": "1.1",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.1/hujidigmixport-1.1-fx.xpi"
+        }
+      ]
+    },
+    "{8c02e6ec-d91b-48a8-9cc6-5b577b55bac0}": {
+      "updates": [
+        {
+          "version": "1.0",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.0/hujidigmixport-1.0-fx.xpi"
+        },
+        {
+          "version": "1.0",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.0/hujidigmixport-1.1-fx.xpi"
+        }
       ]
     }
-    "{8c02e6ec-d91b-48a8-9cc6-5b577b55bac0}" : {
-      "updates": [
-        { "version": "1.0",
-          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.0/hujidigmixport-1.0-fx.xpi" }
-      ]
   }
 }
