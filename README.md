@@ -17,3 +17,6 @@ Simply grab the xpi file from the latest release and open it with mozilla firefo
 4) Click select file and upload the ics file you exported from Digmi.
 5) In the 'add to calendar' option, select the calendar you created in step 2. If you skipped step 2, chooses any calendar you wish.
 6) Click import, and you are done. Adjust settings on relevant devices to be sure the new calendar is displayed.
+
+## Diclaimer
+I do not know the author of Digmi, and did not consult with him regarding this extension. The current icon is the same image that appears on https://www.digmi.org/huji/ and I will replace it if requested.
