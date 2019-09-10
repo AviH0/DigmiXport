@@ -44,20 +44,36 @@ function extractData(courseData) {
     iCalEvent = "";
     for (lesson in cookies_cour[courseId]) {
         for (hour in courseData.lessons[cookies_cour[courseId][lesson]].hours) {
-            hours = courseData.lessons[cookies_cour[courseId][lesson]].hours;
-            lessonType = lesson;
-            if (lessonTypeDict.hasOwnProperty(lesson)){
-                lessonType = lessonTypeDict[lesson];
+            try {
+                hours = courseData.lessons[cookies_cour[courseId][lesson]].hours;
+                lessonType = lesson;
+                if (lessonTypeDict.hasOwnProperty(lesson)) {
+                    lessonType = lessonTypeDict[lesson];
+                }
+                date = translateDayToDate(hours[hour].day, hours[hour].semester);
+                timeInDay = hours[hour].hour.split('-');
+
+
+                aTime = timeInDay[0];
+                bTime = timeInDay[1];
+
+                aTime = aTime.replace(':', '');
+                bTime = bTime.replace(':', '');
+                aTime = parseInt(aTime);
+                bTime = parseInt(bTime);
+
+                startTime = Math.min(aTime, bTime);
+                endTime = Math.max(aTime, bTime);
+
+                place = hours[hour].place;
+                start = date + "T" + startTime + '00';
+                end = date + "T" + endTime + '00';
+                title = lessonType + ": " + courseId + " -- " + courseName;
+                iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
             }
-            date = translateDayToDate(hours[hour].day, hours[hour].semester);
-            timeInDay = hours[hour].hour.split('-');
-            startTime = timeInDay[0];
-            endTime = timeInDay[1];
-            place = hours[hour].place;
-            start = date + "T" + startTime.replace(':', '') + '00';
-            end = date + "T" + endTime.replace(':', '') + '00';
-            title = lessonType + ": " + courseId + " -- " + courseName;
-            iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
+            catch (e) {
+                console.error("Could not create event for course "+ courseId + ", reason:\n" + e.message);
+            }
         }
     }
     // for (hour in courseData.lessons[courseTA].hours) {
