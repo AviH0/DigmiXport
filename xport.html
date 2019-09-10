@@ -7,14 +7,14 @@
 </head>
 <body>
 <title>Title</title>
-<button id="btn_save" title="Export" onclick="load()" name="Export">Export Digmi Calendar</button>
+<button id="btn_save" title="Export" name="Export">Export Digmi Calendar</button>
 </body>
 
-<script type="text/javascript">
+<script>
 
-
+    document.getElementById("btn_save").setAttribute("onClick", "load()");
     function load() {
-        browser.tabs.executeScript({'file': 'xport.js'});
+        chrome.tabs.executeScript({'file': 'xport.js'});
         // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
         // browser.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
         // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
