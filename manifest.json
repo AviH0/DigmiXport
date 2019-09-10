@@ -1,10 +1,15 @@
 {
   "manifest_version": 2,
   "name": "HujiDigmiXport",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Adds a browser action icon to the toolbar.",
   "icons": {
     "48": "icons/clock.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "update_url": "https://github.com/AviH0/DigmiXport/blob/master/updates.json"
+    }
   },
   "content_scripts":[
     {
