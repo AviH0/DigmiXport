@@ -1,4 +1,6 @@
 var year = 2020;
+
+
 exportCal();
 function exportCal () {
     if(document.documentURI != "https://www.digmi.org/huji/" && document.documentURI != "https://digmi.org/huji/"){
@@ -37,36 +39,60 @@ function extractData(courseData) {
     var courseName = courseData.name;
     var courseLect = cookies_cour[courseId]["שעור"];
     var courseTA = cookies_cour[courseId]["תרג"];
+
     iCalEvent = "";
-    for (hour in courseData.lessons[courseLect].hours) {
-        hours = courseData.lessons[courseLect].hours;
-        date = translateDayToDate(hours[hour].day, hours[hour].semester);
-        timeInDay = hours[hour].hour.split('-');
-        startTime = timeInDay[0];
-        endTime = timeInDay[1];
-        place = hours[hour].place;
-        start = date + "T" + startTime.replace(':', '') + '00';
-        end = date + "T" + endTime.replace(':', '') + '00';
-        title = "הרצאה: " + courseId + " -- " + courseName;
-        iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
+    for (lesson in cookies_cour[courseId]) {
+        for (hour in courseData.lessons[cookies_cour[courseId][lesson]].hours) {
+            hours = courseData.lessons[cookies_cour[courseId][lesson]].hours;
+            lessonType = lesson;
+            if (lessonTypeDict.hasOwnProperty(lesson)){
+                lessonType = lessonTypeDict[lesson];
+            }
+            date = translateDayToDate(hours[hour].day, hours[hour].semester);
+            timeInDay = hours[hour].hour.split('-');
+            startTime = timeInDay[0];
+            endTime = timeInDay[1];
+            place = hours[hour].place;
+            start = date + "T" + startTime.replace(':', '') + '00';
+            end = date + "T" + endTime.replace(':', '') + '00';
+            title = lessonType + ": " + courseId + " -- " + courseName;
+            iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
+        }
     }
-    for (hour in courseData.lessons[courseTA].hours) {
-        hours = courseData.lessons[courseTA].hours;
-        date = translateDayToDate(hours[hour].day, hours[hour].semester);
-        timeInDay = hours[hour].hour.split('-');
-        startTime = timeInDay[0];
-        endTime = timeInDay[1];
-        place = hours[hour].place;
-        start = date + "T" + startTime.replace(':', '') + '00';
-        end = date + "T" + endTime.replace(':', '') + '00';
-        title = "תרגול: " + courseId + " -- " + courseName;
-        iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
-    }
+    // for (hour in courseData.lessons[courseTA].hours) {
+    //     hours = courseData.lessons[courseTA].hours;
+    //     date = translateDayToDate(hours[hour].day, hours[hour].semester);
+    //     timeInDay = hours[hour].hour.split('-');
+    //     startTime = timeInDay[0];
+    //     endTime = timeInDay[1];
+    //     place = hours[hour].place;
+    //     start = date + "T" + startTime.replace(':', '') + '00';
+    //     end = date + "T" + endTime.replace(':', '') + '00';
+    //     title = "תרגול: " + courseId + " -- " + courseName;
+    //     iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
+    // }
     return iCalEvent;
 }
 
+
+var lessonTypeDict = {
+    "תרג": "תרגול",
+    "שעור": "הרצאה",
+    "שות": "שות",
+    "סדנה": "סדנה",
+    "מעב": "מעבדה"
+};
+
 var dateDict = {
     "סמסטר א": {
+        "יום א'": "20191027",
+        "יום ב'": "20191028",
+        "יום ג'": "20191029",
+        "יום ד'": "20191030",
+        "יום ה'": "20191031",
+        "יום ו'": "20191101"
+    },
+    "שנתי": {
         "יום א'": "20191027",
         "יום ב'": "20191028",
         "יום ג'": "20191029",
@@ -83,7 +109,7 @@ var dateDict = {
         "יום ו'": "20200320"
     }
 };
-var endOfSemester = {"סמסטר ב": "20200730", "סמסטר א": "20200128"};
+var endOfSemester = {"סמסטר ב": "20200730", "סמסטר א": "20200128","שנתי": "20200128"};
 
 function translateDayToDate(day, semester) {
     return dateDict[semester][day];
