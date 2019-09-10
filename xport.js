@@ -59,11 +59,19 @@ function extractData(courseData) {
 
                 aTime = aTime.replace(':', '');
                 bTime = bTime.replace(':', '');
-                aTime = parseInt(aTime);
-                bTime = parseInt(bTime);
 
-                startTime = Math.min(aTime, bTime);
-                endTime = Math.max(aTime, bTime);
+
+                // In some cases, the times are in the wrong order, so we should check the order.
+                aTimeInt = parseInt(aTime);
+                bTimeInt = parseInt(bTime);
+                if(aTimeInt<bTimeInt){
+                    startTime = aTime;
+                    endTime = bTime;
+                }
+                else {
+                    startTime = bTime;
+                    endTime = aTime;
+                }
 
                 place = hours[hour].place;
                 start = date + "T" + startTime + '00';
@@ -88,7 +96,7 @@ function extractData(courseData) {
     //     title = "תרגול: " + courseId + " -- " + courseName;
     //     iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
     // }
-    return iCalEvent;
+    return iCalEvent+"END:VCALENDAR";
 }
 
 
