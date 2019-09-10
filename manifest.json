@@ -6,12 +6,7 @@
   "icons": {
     "48": "icons/clock.png"
   },
-  "content_scripts":[
-    {
-      "matches": ["https://www.digmi.org/*","http://www.digmi.org/*","http://digmi.org/*","https://digmi.org/*"],
-      "js": ["jquery-3.4.1.min.js","jqueryui_1.8.18.js","jquery.cookie.js"],
-      "run_at": "document_start"
-    }],
+
   "permissions": [
     "cookies",
     "activeTab",

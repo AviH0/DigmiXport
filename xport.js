@@ -1,7 +1,10 @@
 var year = 2020;
 
-(function () {
-    if (document.documentURI != "https://www.digmi.org/huji/") {
+
+exportCal();
+function exportCal () {
+    if(document.documentURI != "https://www.digmi.org/huji/" && document.documentURI != "https://digmi.org/huji/"){
+        alert(document.documentURI);
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
@@ -28,7 +31,7 @@ var year = 2020;
         j++;
     }
 
-})();
+}
 
 
 function extractData(courseData) {
