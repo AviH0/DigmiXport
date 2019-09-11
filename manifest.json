@@ -14,7 +14,7 @@
   "content_scripts":[
     {
       "matches": ["https://www.digmi.org/*"],
-      "js": ["jquery-3.4.1.min.js","jqueryui_1.8.18.js","jquery.cookie.js"]
+      "js": ["src/jquery-3.4.1.min.js","src/jqueryui_1.8.18.js","src/jquery.cookie.js"]
     }],
   "permissions": [
     "cookies",
