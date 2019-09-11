@@ -8,15 +8,17 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "update_url": "https://raw.githubusercontent.com/AviH0/DigmiXport/master/updates.json",
-      "id": "DigmiXport"
+      "update_url": "https://raw.githubusercontent.com/AviH0/DigmiXport/master/updates.json"
     }
   },
   "content_scripts":[
     {
       "matches": ["https://www.digmi.org/*"],
-      "js": ["jquery-3.4.1.min.js","jqueryui_1.8.18.js","jquery.cookie.js","start.js"]
+      "js": ["jquery-3.4.1.min.js","jqueryui_1.8.18.js","jquery.cookie.js"]
     }],
+  "background": {
+    "scripts": ["start.js"]
+  },
   "permissions": [
     "cookies",
     "activeTab",
