@@ -4,7 +4,7 @@
   "version": "1.2.6",
   "description": "Adds a browser action icon to the toolbar.",
   "icons": {
-    "48": "icons/clock.png"
+    "48": "src/icons/clock.png"
   },
   "browser_specific_settings": {
     "gecko": {
@@ -24,8 +24,8 @@
     "<all_urls>"
   ],
   "browser_action": {
-    "default_icon": "icons/clock.png",
+    "default_icon": "src/icons/clock.png",
     "default_title": "DigmiXport",
-    "default_popup": "xport.html"
+    "default_popup": "src/xport.html"
   }
 }
