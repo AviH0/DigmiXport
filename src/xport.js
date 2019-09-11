@@ -202,6 +202,7 @@ function tableLoaded(e) {
 function findDays(semester, year, month, date) {
     datevar = new Date();
     datevar.setFullYear(parseInt(year),parseInt(month)-1,parseInt(date));
+    datevar.setHours(11);
     day = datevar.getDay();
 
     daysDict = {
@@ -214,11 +215,12 @@ function findDays(semester, year, month, date) {
         6: "יום ש'"
     };
     TWENTYFOURHOURS = 86400000;
+
     dateDict[semester][daysDict[day]] = year + month + date;
-    datevar = new Date(datevar.getTime()+TWENTYFOURHOURS);
-    for(i=(day+1)%7; i!=day;i=(i+1)%7){
-        datevar = new Date(datevar.getTime()+TWENTYFOURHOURS);
-        dateDict[semester][daysDict[i]] = datevar.getFullYear().toString() + makeTwoDigits((datevar.getMonth()+1).toString()) + makeTwoDigits(datevar.getDate().toString());
+    for(i=1; i<7;i++){
+        datevarTime = datevar.getTime();
+        datevar.setTime(datevarTime+TWENTYFOURHOURS);
+        dateDict[semester][daysDict[(day+i)%7]] = datevar.getFullYear().toString() + makeTwoDigits((datevar.getMonth()+1).toString()) + makeTwoDigits(datevar.getDate().toString());
     }
 
 
