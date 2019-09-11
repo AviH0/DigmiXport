@@ -1,6 +1,24 @@
 var year = 2020;
+var year_prefix = '20'; // Change if next century.
 
-(function () {
+xhr = new XMLHttpRequest();
+xhr.open('GET', "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%94%D7%A9%D7%A0%D7%94-%D7%94%D7%90%D7%A7%D7%93%D7%9E%D7%99%D7%AA");
+xhr.addEventListener('loadend', tableLoaded);
+xhr.addEventListener("error", tableLoaded);
+xhr.send();
+
+function tableLoaded(e) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(xhr.responseText, "text/html");
+    hujiTable = doc;
+    table = hujiTable.getElementsByTagName('table')[0];
+    tableRows = table.getElementsByTagName('tr');
+    tableRows[0].getE
+    alert(tableRows[0].cells[0].innerText);
+    exportCal();
+}
+
+function exportCal() {
     if (!document.documentURI.startsWith("https://www.digmi.org/huji/")) {
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
@@ -28,7 +46,7 @@ var year = 2020;
         j++;
     }
 
-})();
+}
 
 function getId() {
 
