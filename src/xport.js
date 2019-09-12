@@ -44,7 +44,13 @@ var semesterInformation = {
         "end": "20200128"
     }
 };
-var endOfSemester = {"סמסטר ב": "20200730", "סמסטר א": "20200128", "שנתי": "20200128"};
+var lessonTypeDict = {
+    "תרג": "תרגול",
+    "שעור": "הרצאה",
+    "שות": "שות",
+    "סדנה": "סדנה",
+    "מעב": "מעבדה"
+};
 
 xhr = new XMLHttpRequest();
 xhr.open('GET', "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%94%D7%A9%D7%A0%D7%94-%D7%94%D7%90%D7%A7%D7%93%D7%9E%D7%99%D7%AA");
@@ -178,10 +184,6 @@ function tableLoaded(e) {
             }
         }
     }
-
-    endOfSemester["סמסטר א"] = semesterAendsAt;
-    endOfSemester["סמסטר ב"] = semesterBendsAt;
-    endOfSemester["שנתי"] = semesterBendsAt;
     semesterInformation = {
         "סמסטר א": {
             start: semesterAbeginsAt,
@@ -265,10 +267,10 @@ function exportCal() {
 
 }
 
-function getId() {
-
-    cookies_cour = JSON.parse($.cookie(id + '_courses'));
-}
+// function getId() {
+//
+//     cookies_cour = JSON.parse($.cookie(id + '_courses'));
+// }
 
 function extractData(courseData) {
     var courseId = courseData.id;
@@ -338,13 +340,7 @@ function extractData(courseData) {
 }
 
 
-var lessonTypeDict = {
-    "תרג": "תרגול",
-    "שעור": "הרצאה",
-    "שות": "שות",
-    "סדנה": "סדנה",
-    "מעב": "מעבדה"
-};
+
 
 
 function translateDayToDate(day, semester) {
