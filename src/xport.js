@@ -59,7 +59,7 @@ chrome.runtime.sendMessage(
 
 function tableRecieved(packedStuff) {
 
-    semInfo = []
+    semInfo = [];
     for(inf in packedStuff.semesterInformation){
         semInfo.push(packedStuff.semesterInformation[inf]);
     }

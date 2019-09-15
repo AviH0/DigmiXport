@@ -3,7 +3,35 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 let exclusionDates = [];
-let dateDict;
+let year_prefix = '20';
+let dateDict = {
+    "סמסטר א": {
+        "יום א'": "SU",//"20191027",
+        "יום ב'": "MO",//"20191028",
+        "יום ג'": "TU",//"20191029",
+        "יום ד'": "WE",//"20191030",
+        "יום ה'": "TH",//"20191031",
+        "יום ו'": "FR"//"20191101"
+    },
+    "שנתי": {
+        "יום א'": "20191027",
+        "יום ב'": "20191028",
+        "יום ג'": "20191029",
+        "יום ד'": "20191030",
+        "יום ה'": "20191031",
+        "יום ו'": "20191101",
+        "יום ש'": ""
+    },
+    "סמסטר ב": {
+        "יום א'": "20200315",
+        "יום ב'": "20200316",
+        "יום ג'": "20200317",
+        "יום ד'": "20200318",
+        "יום ה'": "20200319",
+        "יום ו'": "20200320",
+        "יום ש'": ""
+    }
+};
 
 
 chrome.runtime.onMessage.addListener(
@@ -21,19 +49,20 @@ chrome.runtime.onMessage.addListener(
 
 function load(e) {
 
-    chrome.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
-    chrome.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
-    chrome.tabs.executeScript({'file': 'jquery.cookie.js'});
-    chrome.tabs.executeScript({'file': 'xport.js'});
+    chrome.tabs.executeScript({'file': 'src/jquery-3.4.1.min.js'});
+    chrome.tabs.executeScript({'file': 'src/jqueryui_1.8.18.js'});
+    chrome.tabs.executeScript({'file': 'src/jquery.cookie.js'});
+    chrome.tabs.executeScript({'file': 'src/xport.js'});
 
 }
 
 function tableLoaded(e){
 
     var parser = new DOMParser();
+
     var doc = parser.parseFromString(xhr.responseText, "text/html");
-    hujiTable = doc;
-    table = hujiTable.getElementsByTagName('table')[0];
+    alert(document.characterSet);
+    table = doc.getElementsByTagName('table')[0];
     tableRows = table.getElementsByTagName('tr');
     let semesterAbeginsAt;
     let semesterAbeginsAtDates;
@@ -48,6 +77,7 @@ function tableLoaded(e){
     for (row = 0; row < tableRows.length; row++) {
 
         eventName = tableRows[row].cells[0].textContent;
+        alert(eventName);
         if (eventName.includes("פתיחת שנת הלימודים")) {
             semesterAbeginsAt = tableRows[row].cells[2].textContent;
             semesterAbeginsAtDates = semesterAbeginsAt.split('.');
@@ -205,6 +235,15 @@ function findDays(semester, year, month, date) {
     }
 
 
+}
+function getElementsByTagName(element, tagName) {
+    var data = [];
+    var descendants = element.getDescendants();
+    for(i in descendants) {
+        var elt = descendants[i].asElement();
+        if( elt !=null && elt.getName()== tagName) data.push(elt);
+    }
+    return data;
 }
 
 function makeTwoDigits(number) {
