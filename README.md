@@ -1,17 +1,13 @@
 # DigmiXport
 A Web Extension that allows exporting an ICal calendar from HUJI Digmi.
 
-## Installation
+## Installation (Firefox):
 Simply grab the xpi file from the latest release and open it with mozilla firefox. Allow github to install the add-on if needed and proceed with the installation as prompted. The add-on is signed by mozilla and will auto-update as needed. After the installation is complete a button should appear in the browser toolbar with the clock icon on it.
 
-## Installation in chrome (experimental):
-1) Go to the chrome branch of this repository: https://github.com/AviH0/DigmiXport/tree/chrome .
-2) Click the green 'Clone or download', and click download ZIP.
-3) Extract the contents of the downloaded archive in a directory of your choosing.
-4) In Google Chrome, click More tools -> Extensions in the context menu.
-5) Tick the 'Developer mode' toggle on the top right corner.
-6) Click 'Load Unpacked' and select the folder containing the extracted archive from step 3.
-7) The extension should now be loaded. Note: Running extesntions in developer mode in chrome is generally a bad idea.
+## Installation (Chrome):
+Go to:
+https://chrome.google.com/webstore/detail/hujidigmixport/egggfnhegcafmnaklhgfbhdlecphmadk 
+and click 'Add to Chrome'.
 
 ## Exporting from Digmi
 1) Go to https://www.digmi.org/huji/
