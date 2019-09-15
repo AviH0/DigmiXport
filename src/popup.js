@@ -61,7 +61,6 @@ function tableLoaded(e){
     var parser = new DOMParser();
 
     var doc = parser.parseFromString(xhr.responseText, "text/html");
-    alert(document.characterSet);
     table = doc.getElementsByTagName('table')[0];
     tableRows = table.getElementsByTagName('tr');
     let semesterAbeginsAt;
@@ -77,7 +76,6 @@ function tableLoaded(e){
     for (row = 0; row < tableRows.length; row++) {
 
         eventName = tableRows[row].cells[0].textContent;
-        alert(eventName);
         if (eventName.includes("פתיחת שנת הלימודים")) {
             semesterAbeginsAt = tableRows[row].cells[2].textContent;
             semesterAbeginsAtDates = semesterAbeginsAt.split('.');
