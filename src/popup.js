@@ -1,6 +1,18 @@
+var parsedCalendar;
+load();
+
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('button').addEventListener('click', load);
+
+
 });
+
+function authorizeClicked(){
+    handleClientLoad();
+}
+
+function downloadIcs(){
+    download_file('Calendar.ics', parsedCalendar['ics']);
+}
 
 let exclusionDates = [];
 let year_prefix = '20';
@@ -39,12 +51,24 @@ chrome.runtime.onMessage.addListener(
         if (request.contentScriptQuery == 'getCalendarInfo') {
             xhr = new XMLHttpRequest();
             xhr.open('GET', "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%94%D7%A9%D7%A0%D7%94-%D7%94%D7%90%D7%A7%D7%93%D7%9E%D7%99%D7%AA");
-            xhr.addEventListener('loadend', result=>sendResponse(tableLoaded(result)));
+            xhr.addEventListener('loadend', result=>parseCalendar(sendResponse, result));
             xhr.send();
             return true;  // Will respond asynchronously.
         }
-    });
+        if(request.contentScriptQuery == 'gotCalendarInfo'){
+            parsedCalendar = request.parsedCalendar;
+            document.getElementById('loading').style.display='none';
+            document.getElementById('btn_save').style.display='inline-block';
+            document.getElementById('authorize_button').style.display='inline-block';
+            document.getElementById('btn_save').addEventListener('click', downloadIcs);
+            document.getElementById('authorize_button').addEventListener('click', authorizeClicked);
 
+        }
+    });
+function parseCalendar(sendResponse, table){
+    parsedCalendar = sendResponse(tableLoaded(table));
+
+}
 
 
 function load(e) {
@@ -54,8 +78,28 @@ function load(e) {
     chrome.tabs.executeScript({'file': 'src/jquery.cookie.js'});
     chrome.tabs.executeScript({'file': 'src/xport.js'});
 
-}
 
+}
+function download_file(name, contents, mime_type) {
+    mime_type = mime_type || "text/plain";
+
+    var blob = new Blob([contents], {type: mime_type});
+
+    var dlink = document.createElement('a');
+    document.body.appendChild(dlink);
+    dlink.download = name;
+    dlink.href = window.URL.createObjectURL(blob);
+    dlink.onclick = function (e) {
+        // revokeObjectURL needs a delay to work properly
+        var that = this;
+        setTimeout(function () {
+            window.URL.revokeObjectURL(that.href);
+        }, 1500);
+    };
+
+    dlink.click();
+    dlink.remove();
+}
 function tableLoaded(e){
 
     var parser = new DOMParser();
