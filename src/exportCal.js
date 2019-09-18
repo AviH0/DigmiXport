@@ -1,4 +1,4 @@
-var API_KEY = 'AIzaSyD6JAUasHzAVvv_f7bOtYeGPPcZO7sn6F0';
+var API_KEY = '-----------------------------';
 
 
 function getCalendarList(callback, token){
