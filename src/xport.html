@@ -4,11 +4,27 @@
 <head>
     <meta charset="utf-8">
     <title>DigmiXport</title>
+    <script src="exportCal.js"></script>
     <script src="popup.js"></script>
+
+
+
 
 </head>
 <body>
-<button id="btn_save" title="Export" name="Export">Export Digmi Calendar</button>
+<img src="icons/clock.png" alt="Digmi_logo">
+<strong>Export Digmi Calendar</strong>
+<label id="loading">Parsing Calendar Data, Please wait...</label>
+<button id="btn_save" style="display: none">Download as ics file</button>
+
+<button id="authorize_button" style="display: none">Export to Google Calendar</button>
+
+<pre id="content" style="white-space: pre-wrap;"></pre>
+
+
+
+
+
 </body>
 
 </html>

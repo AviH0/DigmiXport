@@ -1,6 +1,9 @@
 var year = 2020;
 var year_prefix = '20'; // Change if next century.
 var exclusionDates = [];
+var eventsForGoogle = [];
+var currentEventIndex = 0;
+
 
 var dateDict = {
     "סמסטר א": {
@@ -69,7 +72,7 @@ function tableRecieved(packedStuff) {
 
     exclusionDates = packedStuff.exclusionDates;
     dateDict = packedStuff.dateDict;
-    exportCal();
+    return exportCal();
 }
 
 
@@ -94,7 +97,10 @@ function exportCal() {
                 i++;
                 if (i == j) {
                     // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
-                    download_file("Calendar.ics", calendar + "END:VCALENDAR");
+                    // download_file("Calendar.ics", calendar + "END:VCALENDAR");
+                    chrome.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo', parsedCalendar: {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle}});
+                    return;
+                    // return {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle};
                 }
             }
         });
@@ -123,6 +129,24 @@ function extractData(courseData) {
     for (lesson in cookies_cour[courseId]) {
         for (hour in courseData.lessons[cookies_cour[courseId][lesson]].hours) {
             try {
+
+
+                var currentEvent = {
+
+                    'end':{
+                        'dateTime' :"",
+                        "timeZone": "Asia/Jerusalem"
+                    },
+                    'start':{
+                        'dateTime':"",
+                        "timeZone": "Asia/Jerusalem"
+                    },
+                    'location': "",
+                    'summary':'',
+                    'recurrence': []
+
+                };
+
                 hours = courseData.lessons[cookies_cour[courseId][lesson]].hours;
                 lessonType = lesson;
                 if (lessonTypeDict.hasOwnProperty(lesson)) {
@@ -139,6 +163,9 @@ function extractData(courseData) {
 
                 aTime = timeInDay[0];
                 bTime = timeInDay[1];
+
+
+
 
                 aTime = aTime.replace(':', '');
                 bTime = bTime.replace(':', '');
@@ -159,7 +186,20 @@ function extractData(courseData) {
                 start = date + "T" + startTime + '00';
                 end = date + "T" + endTime + '00';
                 title = lessonType + ": " + courseId + " -- " + courseName;
-                iCalEvent += createIcalEvent(title, start, end, place, semesterInformation[lessonSemester].end);
+                currentEvent.summary = title;
+                currentEvent.location = place;
+
+                startTimeForGoogle = startTime.substr(0,2) + ':'  +startTime.substr(2,2) + ':00';
+                endTimeForGoogle = endTime.substr(0,2) +':' +endTime.substr(2,2) + ':00';
+                dateForGoogle = date.substr(0,4) + '-' + date.substr(4,2) + '-' +date.substr(6,2);
+
+                startDateForGoogle = dateForGoogle + 'T' +startTimeForGoogle;
+                endDateForGoogle = dateForGoogle + 'T' +endTimeForGoogle;
+
+                currentEvent.start.dateTime = startDateForGoogle;
+                currentEvent.end.dateTime = endDateForGoogle;
+
+                iCalEvent += createIcalEvent(title, start, end, place, semesterInformation[lessonSemester].end, currentEvent);
             } catch (e) {
                 console.error("Could not create event for course " + courseId + ", reason:\n" + e.message);
             }
@@ -186,44 +226,30 @@ function translateDayToDate(day, semester) {
 
 }
 
-function createIcalEvent(title, start, end, place, endOfSemester) {
+function createIcalEvent(title, start, end, place, endOfSemester, currentEvent) {
     // decode html entities in "place" string
     // place = $('<div>').html(place).text();
 
     startTime = start.substr(9, start.length - 1);
-
+    var exdate = '';
     var result = "BEGIN:VEVENT\n";
-    result += "DTSTART:" + start + "\n";
-    result += "DTEND:" + end + "\n";
-    result += "RRULE:FREQ=WEEKLY;INTERVAL=1;UNTIL=" + endOfSemester + "T000000\n";
-    result += "EXDATE:";
+    result += "DTSTART;TZID=Asia/Jerusalem:" + start + "Z\n";
+    result += "DTEND;TZID=Asia/Jerusalem:" + end + "Z\n";
+    result += "RRULE:FREQ=WEEKLY;INTERVAL=1;UNTIL=" + endOfSemester + "T235959Z\n";
+    currentEvent.recurrence.push("RRULE:FREQ=WEEKLY;INTERVAL=1;UNTIL=" + endOfSemester + "T235959Z\n");
+    exdate += "EXDATE;TZID=Asia/Jerusalem:";
     for (i = 0; i < exclusionDates.length - 1; i++) {
-        result += exclusionDates[i] + 'T' + startTime + ',';
+        exdate += exclusionDates[i] + 'T' + startTime + ',';
     }
-    result += exclusionDates[i] + 'T' + startTime + '\n';
+    exdate += exclusionDates[i] + 'T' + startTime + '\n';
+    currentEvent.recurrence.push(exdate);
+    result += exdate;
     result += "SUMMARY:" + title + "\n";
     result += "LOCATION:" + place + "\n";
     result += "END:VEVENT\n";
+    eventsForGoogle.push(currentEvent);
+    currentEventIndex++;
     return result;
 }
 
-function download_file(name, contents, mime_type) {
-    mime_type = mime_type || "text/plain";
 
-    var blob = new Blob([contents], {type: mime_type});
-
-    var dlink = document.createElement('a');
-    document.body.appendChild(dlink);
-    dlink.download = name;
-    dlink.href = window.URL.createObjectURL(blob);
-    dlink.onclick = function (e) {
-        // revokeObjectURL needs a delay to work properly
-        var that = this;
-        setTimeout(function () {
-            window.URL.revokeObjectURL(that.href);
-        }, 1500);
-    };
-
-    dlink.click();
-    dlink.remove();
-}
