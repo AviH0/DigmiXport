@@ -23,12 +23,6 @@
       "matches": ["https://www.digmi.org/*"],
       "js": ["src/jquery-3.4.1.min.js","src/jqueryui_1.8.18.js","src/jquery.cookie.js"]
     }],
-  "oauth2": {
-    "client_id": "411692199033-rl6dk890b4qmcqj5a1trht5qq2sgtai2.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/calendar"
-    ]
-  },
   "browser_action": {
     "default_icon": "src/icons/clock.png",
     "default_title": "DigmiXport",
