@@ -54,9 +54,7 @@ var lessonTypeDict = {
     "סדנה": "סדנה",
     "מעב": "מעבדה"
 };
-
-
-chrome.runtime.sendMessage(
+browser.runtime.sendMessage(
     {contentScriptQuery: 'getCalendarInfo'}, response => tableRecieved(response));
 
 
@@ -98,7 +96,7 @@ function exportCal() {
                 if (i == j) {
                     // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
                     // download_file("Calendar.ics", calendar + "END:VCALENDAR");
-                    chrome.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo', parsedCalendar: {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle}});
+                    browser.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo', parsedCalendar: {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle}});
                     return;
                     // return {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle};
                 }

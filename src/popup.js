@@ -46,7 +46,7 @@ let dateDict = {
 };
 
 
-chrome.runtime.onMessage.addListener(
+browser.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.contentScriptQuery == 'getCalendarInfo') {
             xhr = new XMLHttpRequest();
@@ -73,10 +73,10 @@ function parseCalendar(sendResponse, table){
 
 function load(e) {
 
-    chrome.tabs.executeScript({'file': 'src/jquery-3.4.1.min.js'});
-    chrome.tabs.executeScript({'file': 'src/jqueryui_1.8.18.js'});
-    chrome.tabs.executeScript({'file': 'src/jquery.cookie.js'});
-    chrome.tabs.executeScript({'file': 'src/xport.js'});
+    // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
+    // browser.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
+    // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
+    browser.tabs.executeScript({'file': 'xport.js'});
 
 
 }

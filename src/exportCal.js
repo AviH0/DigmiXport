@@ -1,4 +1,6 @@
-var API_KEY = '-----------------------------';
+var API_KEY = '-';
+var SCOPE ="-";
+var Client_ID="-";
 
 
 function getCalendarList(callback, token){
@@ -106,7 +108,16 @@ function populateDropList(data, token){
  */
 function handleClientLoad() {
     createForm();
-    chrome.identity.getAuthToken({interactive: true}, function (token) {
+    browser.identity.launchWebAuthFlow({
+        url:"https://accounts.google.com/o/oauth2/v2/auth?scope=" + SCOPE +
+            "&redirect_uri="+ browser.identity.getRedirectURL() +"&response_type=token&"+"client_id="+Client_ID,
+        interactive: true})
+        .then(response =>
+    {
+        alert(response);
+        var regex = /.+?(access_token=([^&]+))/;
+        var found = response.match(regex);
+        token =found[2];
         getCalendarList(populateDropList, token);
     });
 
