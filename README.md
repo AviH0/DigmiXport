@@ -4,12 +4,15 @@ A Web Extension that allows exporting an ICal calendar from HUJI Digmi.
 ## Installation (Firefox):
 Simply grab the xpi file from the latest release and open it with mozilla firefox. Allow github to install the add-on if needed and proceed with the installation as prompted. The add-on is signed by mozilla and will auto-update as needed. After the installation is complete a button should appear in the browser toolbar with the clock icon on it.
 
+Note: Due to [this](https://bugzilla.mozilla.org/show_bug.cgi?id=1292701) issue with firefox, v1.4.0 for firefox has been pulled, hopefully a workaround will be implemented soon.
+
 ## Installation (Chrome):
 Go to:
-https://chrome.google.com/webstore/detail/hujidigmixport/egggfnhegcafmnaklhgfbhdlecphmadk 
+[DigmiXport on Chrome Web Store](https://chrome.google.com/webstore/detail/hujidigmixport/egggfnhegcafmnaklhgfbhdlecphmadk) 
 and click 'Add to Chrome'.
 
 ## Exporting from Digmi
+Note: since v1.4.0 integrated export to google calendar is available.
 1) Go to https://www.digmi.org/huji/
 2) Build your timetable as usual.
 3) Click DigmiXport's toolbar button and the 'Export Digmi Calendar' Button that will appear.
