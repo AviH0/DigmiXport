@@ -1,0 +1,1 @@
+browser.browserAction.onClicked.addListener(()=>browser.tabs.create({url:'/src/xport.html'}));

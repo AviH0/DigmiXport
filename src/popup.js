@@ -69,14 +69,16 @@ function parseCalendar(sendResponse, table){
     parsedCalendar = sendResponse(tableLoaded(table));
 
 }
-
+function getParsedCalendar() {
+    return parsedCalendar;
+}
 
 function load(e) {
 
     // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
     // browser.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
     // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
-    browser.tabs.executeScript({'file': 'xport.js'});
+    browser.tabs.query({url:['*://*.digmi.org/*']}).then(tabArray => browser.tabs.executeScript(tabArray[0].id,{'file': 'xport.js'}));
 
 
 }

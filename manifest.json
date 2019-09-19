@@ -18,6 +18,9 @@
     "https://academic-secretary.huji.ac.il/*",
     "https://www.googleapis.com/*"
   ],
+  "background": {
+    "scripts": ["src/background.js"]
+  },
   "content_scripts":[
     {
       "matches": ["https://www.digmi.org/*"],
@@ -26,7 +29,7 @@
   "browser_action": {
     "default_icon": "src/icons/clock.png",
     "default_title": "DigmiXport",
-    "default_popup": "src/xport.html"
+    "browser_style": true
   }
 
 }
