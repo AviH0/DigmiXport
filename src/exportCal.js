@@ -1,6 +1,6 @@
-var API_KEY = 'AIzaSyD6JAUasHzAVvv_f7bOtYeGPPcZO7sn6F0';
-var SCOPE ="https://www.googleapis.com/auth/calendar";
-var Client_ID="411692199033-5anlhh5i3mhvh6j0p6oc4cgt6hd5skae.apps.googleusercontent.com";
+var API_KEY = '';
+var SCOPE ="";
+var Client_ID="";
 
 
 function getCalendarList(callback, token){
@@ -110,7 +110,7 @@ function handleClientLoad() {
     createForm();
     browser.identity.launchWebAuthFlow({
         url:"https://accounts.google.com/o/oauth2/v2/auth?scope=" + SCOPE +
-            "&redirect_uri="+ "https://bb47fc41aef980c9e0f4aae45250df9f5e26433e.extensions.allizom.org/"	 +"&response_type=token&"+"client_id="+Client_ID,
+            "&redirect_uri="+ browser.identity.getRedirectURL()	 +"&response_type=token&"+"client_id="+Client_ID,
         interactive: true})
         .then(response =>
     {
