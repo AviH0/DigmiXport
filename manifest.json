@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "name": "HujiDigmiXport",
+  "version": "1.4.3",
+  "description": "Allows exporting ICal calendar from Digmi for HUJI.",
+  "id": "{b143720d-78c9-4b1e-9ad1-520459021274}",
+  "icons": {
+    "48": "src/icons/clock.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "update_url": "https://raw.githubusercontent.com/AviH0/DigmiXport/master/updates.json"
+    }
+  },
+  "content_security_policy": "script-src 'self' https://apis.google.com/; object-src 'self'",
+  "permissions": [
+    "cookies",
+    "activeTab",
+    "tabs",
+    "webRequest",
+    "identity",
+    "https://*.digmi.org/*",
+    "https://academic-secretary.huji.ac.il/*",
+    "https://www.googleapis.com/*"
+  ],
+  "background": {
+    "scripts": ["src/background.js"]
+  },
+  "content_scripts":[
+    {
+      "matches": ["https://www.digmi.org/*"],
+      "js": ["src/jquery-3.4.1.min.js","src/jqueryui_1.8.18.js","src/jquery.cookie.js"]
+    }],
+  "browser_action": {
+    "default_icon": "src/icons/clock.png",
+    "default_title": "DigmiXport",
+    "browser_style": true
+  }
+
+}
