@@ -28,6 +28,7 @@ Note: since v1.4.0 integrated export to google calendar is available.
 
 ## Privacy
 DigmiXport dows not store any of your personal data.
+Read the policy [here](https://www.cse.huji.ac.il/~avih/digmixport/privacy)
 
 ## Diclaimer
 I do not know the author of Digmi, and did not consult with him regarding this extension. The current icon is the same image that appears on https://www.digmi.org/huji/ and I will replace it if requested.
