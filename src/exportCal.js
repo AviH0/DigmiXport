@@ -1,7 +1,7 @@
 var API_KEY = '';
 var SCOPE ="";
 var Client_ID="";
-
+var REDIRECT_URL = "https://www.cse.huji.ac.il/~avih/digmixport/";
 
 function getCalendarList(callback, token){
     let init = {
@@ -110,7 +110,7 @@ function handleClientLoad() {
     createForm();
     browser.identity.launchWebAuthFlow({
         url:"https://accounts.google.com/o/oauth2/v2/auth?scope=" + SCOPE +
-            "&redirect_uri="+ browser.identity.getRedirectURL()	 +"&response_type=token&"+"client_id="+Client_ID,
+            "&redirect_uri="+ REDIRECT_URL	 +"&response_type=token&"+"client_id="+Client_ID,
         interactive: true})
         .then(response =>
     {
