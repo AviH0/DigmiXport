@@ -26,5 +26,8 @@ Note: since v1.4.0 integrated export to google calendar is available.
 5) In the 'add to calendar' option, select the calendar you created in step 2. If you skipped step 2, chooses any calendar you wish.
 6) Click import, and you are done. Adjust settings on relevant devices to be sure the new calendar is displayed.
 
+## Privacy
+DigmiXport dows not store any of your personal data.
+
 ## Diclaimer
 I do not know the author of Digmi, and did not consult with him regarding this extension. The current icon is the same image that appears on https://www.digmi.org/huji/ and I will replace it if requested.
