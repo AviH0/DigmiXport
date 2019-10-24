@@ -1,4 +1,5 @@
 var parsedCalendar;
+var year = "2020"; // NEED TO CHANGE THIS FOR NEXT YEAR
 load();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,11 +8,25 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function authorizeClicked(){
+    isExams = document.getElementById('toggle_exams');
+    if(isExams.checked){
+        getExamEvents(parsedCalendar, handleClientLoad);
+        return;
+    }
     handleClientLoad();
 }
 
 function downloadIcs(){
-    download_file('Calendar.ics', parsedCalendar['ics']);
+    isExams = document.getElementById('toggle_exams');
+    if(isExams.checked){
+        getExamEvents(parsedCalendar, downloadNow);
+        return;
+    }
+    downloadNow();
+}
+
+function downloadNow(){
+    download_file('Calendar.ics', parsedCalendar.ics);
 }
 
 let exclusionDates = [];
@@ -60,6 +75,7 @@ chrome.runtime.onMessage.addListener(
             document.getElementById('loading').style.display='none';
             document.getElementById('btn_save').style.display='inline-block';
             document.getElementById('authorize_button').style.display='inline-block';
+            document.getElementById('toggle_exams').style.display='inline';
             document.getElementById('btn_save').addEventListener('click', downloadIcs);
             document.getElementById('authorize_button').addEventListener('click', authorizeClicked);
 
@@ -69,7 +85,71 @@ function parseCalendar(sendResponse, table){
     parsedCalendar = sendResponse(tableLoaded(table));
 
 }
+function getExamEvents(parsedCalendar, after) {
+    datevar = new Date();
+    let exams = {};
+    for(c in parsedCalendar['courses']){
+        course = c;
+        var shnatonReq = new XMLHttpRequest();
+        shnatonReq.open('POST', 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + course);
+        shnatonReq.addEventListener('loadend', function () {
+            var re = /\d+/;
+            ccourse = this.responseText.match(re)[0];
+            exams[ccourse] = [];
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(this.responseText, "text/html");
+            examTable = doc.getElementsByClassName('courseTab_td');
+            for (i=0; i<examTable.length;i++){
+                try {
 
+                    examDate = examTable[i].innerText;
+                    i++;
+                    examHour = examTable[i].innerText;
+                    i++;
+                    examComments = examTable[i].innerText;
+                    i++;
+                    examLocation = examTable[i].innerText;
+                    i++;
+                    examMoed = examTable[i].innerText;
+                    i++;
+                    examSem = examTable[i].innerText;
+                    exam = {
+                        date: examDate,
+                        time: examHour,
+                        comments: examComments,
+                        location: examLocation,
+                        moed: examMoed,
+                        semester: examSem,
+                        course: ccourse
+                    };
+                    exams[ccourse].push(exam);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
+            if(Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length){
+                parseExamDates(exams, after);
+            }
+        });
+        shnatonReq.send();
+    }
+
+}
+function parseExamDates(exams, after) {
+    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+            contentScriptQuery: 'getExamEvents',
+            parsedCalendar: parsedCalendar,
+            exams: exams
+        },function(response) {gotExamEvents(response, after);});
+    });
+}
+
+function gotExamEvents(newParsedCalendar, after){
+    parsedCalendar = newParsedCalendar;
+    after();
+}
 
 function load(e) {
 
