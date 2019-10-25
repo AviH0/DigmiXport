@@ -3,6 +3,7 @@ var year_prefix = '20'; // Change if next century.
 var exclusionDates = [];
 var eventsForGoogle = [];
 var currentEventIndex = 0;
+var coursesAndSemesters = {};
 
 
 var dateDict = {
@@ -47,6 +48,12 @@ var semesterInformation = {
         "end": "20200128"
     }
 };
+var courseSemesterToExamSemester = {
+    "סמסטר א": "סמסטר א",
+    "סמסטר ב": "סמסטר ב",
+    "שנתי": "סמסטר ב"
+
+};
 var lessonTypeDict = {
     "תרג": "תרגול",
     "שעור": "הרצאה",
@@ -57,6 +64,84 @@ var lessonTypeDict = {
 browser.runtime.sendMessage(
     {contentScriptQuery: 'getCalendarInfo'}, response => tableRecieved(response));
 
+browser.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        if (request.contentScriptQuery == 'getExamEvents') {
+            parsedCalendarFromReq = request.parsedCalendar;
+            exams = request.exams;
+            parsedCalendarFromReq.ics = parsedCalendarFromReq.ics.replace("END:VCALENDAR", "");
+            for (course in exams) {
+                var courseExams = {};
+                for (exam in exams[course]) {
+                    var wantedSemester = coursesAndSemesters[course];
+                    if (exams[course][exam].semester != wantedSemester) {
+                        break;
+                    }
+                    if (!courseExams.hasOwnProperty(exams[course][exam].moed)) {
+                        eDate = exams[course][exam].date;
+                        eYear = eDate.substring(6, 10);
+                        eMonth = eDate.substring(3, 5);
+                        eDay = eDate.substring(0, 2);
+                        eDate = eYear + '-' + eMonth + '-' + eDay;
+                        if (exams[course][exam].time.match(/\d\d:\d\d/) == null) {
+                            exams[course][exam].time = "00:00";
+                        }
+                        dateTimeStart = eDate + 'T' + exams[course][exam].time + ':00';
+                        dateVar = new Date(dateTimeStart);
+                        THREEHOURS = 10800000;
+                        endDateVar = new Date(dateVar.getTime() + THREEHOURS);
+                        dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth()+1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes())+':00';
+                        summary = exams[course][exam].course + ": " + exams[course][exam].semester + exams[course][exam].moed;
+                        courseExams[exams[course][exam].moed] = {
+                            gEvent: {
+                                'end': {
+                                    'dateTime': dateTimeEnd,
+                                    "timeZone": "Asia/Jerusalem"
+                                },
+                                'start': {
+                                    'dateTime': dateTimeStart,
+                                    "timeZone": "Asia/Jerusalem"
+                                },
+                                'location': exams[course][exam].comments + ": " + exams[course][exam].location + '\n',
+                                'summary': summary,
+                            }
+                        };
+                        start = dateTimeStart.replace(/-/g, "").replace(/:/g, "");
+                        end = dateTimeEnd.replace(/-/g, "").replace(/:/g, "").replace(/\.000/, "");
+                        courseExams[exams[course][exam].moed]['iEvent'] = {
+                            DTSTART: "DTSTART;TZID=Asia/Jerusalem:" + start + "Z\n",
+                            DTEND: "DTEND;TZID=Asia/Jerusalem:" + end + "\n",
+                            SUMMARY: "SUMMARY:" + summary + "\n",
+                            LOCATION: "LOCATION:" + exams[course][exam].comments + ": " + exams[course][exam].location + '\n',
+                        }
+                    } else {
+                        courseExams[exams[course][exam].moed].iEvent.LOCATION += exams[course][exam].comments + ": " + exams[course][exam].location + '\n';
+                        courseExams[exams[course][exam].moed].gEvent.location += exams[course][exam].comments + ": " + exams[course][exam].location + '\n';
+                    }
+                }
+                for (moed in courseExams) {
+                    parsedCalendarFromReq.eventList.push(courseExams[moed].gEvent);
+                    var result = "BEGIN:VEVENT\n";
+                    result += courseExams[moed].iEvent.DTSTART;
+                    result += courseExams[moed].iEvent.DTEND;
+                    result += courseExams[moed].iEvent.SUMMARY;
+                    result += courseExams[moed].iEvent.LOCATION;
+                    result += "END:VEVENT\n";
+                    parsedCalendarFromReq.ics += result;
+                }
+                // var result = "BEGIN:VEVENT\n";
+                // result += "DTSTART;TZID=Asia/Jerusalem:" + start + "Z\n";
+                // result += "DTEND;TZID=Asia/Jerusalem:" + end + "\n";
+                // result += "SUMMARY:" + summary + "\n";
+                // result += "LOCATION:" + exams[course][exam].location + '\n' + exams[course][exam].comments + "\n";
+                // result += "END:VEVENT\n";
+                // parsedCalendarFromReq.ics += result;
+            }
+            parsedCalendarFromReq.ics += "END:VCALENDAR";
+            sendResponse(parsedCalendarFromReq);
+        }
+        return true;  // Will respond asynchronously.
+    });
 
 function tableRecieved(packedStuff) {
 
@@ -96,7 +181,13 @@ function exportCal() {
                 if (i == j) {
                     // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
                     // download_file("Calendar.ics", calendar + "END:VCALENDAR");
-                    browser.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo', parsedCalendar: {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle}});
+                     browser.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo',
+                        parsedCalendar: {
+                            'ics': calendar + "END:VCALENDAR",
+                            'eventList': eventsForGoogle,
+                            'courses': cookies_cour
+                        }
+                    });
                     return;
                     // return {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle};
                 }
@@ -152,6 +243,7 @@ function extractData(courseData) {
                 }
 
                 lessonSemester = hours[hour].semester;
+                coursesAndSemesters[courseId] = lessonSemester;
 
                 //date = translateDayToDate(hours[hour].day, hours[hour].semester);
                 date = dateDict[lessonSemester][hours[hour].day];
@@ -249,5 +341,14 @@ function createIcalEvent(title, start, end, place, endOfSemester, currentEvent) 
     currentEventIndex++;
     return result;
 }
+
+function makeTwoDigits(number) {
+    number = number.toString().trim();
+    if (number.length < 2) {
+        return '0' + number;
+    }
+    return number;
+}
+
 
 

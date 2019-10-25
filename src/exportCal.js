@@ -1,6 +1,6 @@
-var API_KEY = '';
-var SCOPE ="";
-var Client_ID="";
+var API_KEY = 'AIzaSyD6JAUasHzAVvv_f7bOtYeGPPcZO7sn6F0';
+var SCOPE ="https://www.googleapis.com/auth/calendar";
+var Client_ID="411692199033-5anlhh5i3mhvh6j0p6oc4cgt6hd5skae.apps.googleusercontent.com";
 var REDIRECT_URL = "https://www.cse.huji.ac.il/~avih/digmixport/";
 
 function getCalendarList(callback, token){
@@ -21,6 +21,9 @@ function getCalendarList(callback, token){
 }
 
 function createForm(){
+    document.getElementById("toggle_exams").style.display='none';
+    document.getElementById("toggle_exams_label").style.display='none';
+    document.getElementById('toggle_lessons').style.display='none';
     var calendarList = document.createElement("SELECT");
     calendarList.id='calendar_list';
     calendarList.style.display='none';
