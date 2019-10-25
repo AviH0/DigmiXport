@@ -9,20 +9,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function authorizeClicked(){
     isExams = document.getElementById('toggle_exams');
-    if(isExams.checked){
+     isLessons = document.getElementById('toggle_lessons');
+    if(isExams.checked && isLessons.checked){
         getExamEvents(parsedCalendar, handleClientLoad);
-        return;
     }
-    handleClientLoad();
+    else if(isExams.checked){
+        parsedCalendar.ics = "BEGIN:VCALENDAR\nVERSION:2.0\n";
+        parsedCalendar.eventList = [];
+        getExamEvents(parsedCalendar, handleClientLoad)
+    }
+    else if(isLessons.checked){
+        handleClientLoad();
+    }
 }
 
 function downloadIcs(){
     isExams = document.getElementById('toggle_exams');
-    if(isExams.checked){
+    isLessons = document.getElementById('toggle_lessons');
+    if(isExams.checked && isLessons.checked){
         getExamEvents(parsedCalendar, downloadNow);
-        return;
     }
-    downloadNow();
+    else if(isExams.checked){
+        parsedCalendar.ics = "BEGIN:VCALENDAR\nVERSION:2.0\n";
+        parsedCalendar.eventList = [];
+        getExamEvents(parsedCalendar, downloadNow)
+    }
+    else if(isLessons.checked){
+        downloadNow();
+    }
 }
 
 function downloadNow(){
@@ -75,7 +89,10 @@ chrome.runtime.onMessage.addListener(
             document.getElementById('loading').style.display='none';
             document.getElementById('btn_save').style.display='inline-block';
             document.getElementById('authorize_button').style.display='inline-block';
-            document.getElementById('toggle_exams').style.display='inline';
+            document.getElementById('toggle_exams').style.display='inline-block';
+            document.getElementById('toggle_exams_label').style.display='inline-block';
+            document.getElementById('toggle_lessons').style.display='inline-block';
+            document.getElementById('toggle_lessons_label').style.display='inline-block';
             document.getElementById('btn_save').addEventListener('click', downloadIcs);
             document.getElementById('authorize_button').addEventListener('click', authorizeClicked);
 

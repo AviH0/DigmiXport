@@ -21,6 +21,7 @@ function getCalendarList(callback, token){
 function createForm(){
     document.getElementById("toggle_exams").style.display='none';
     document.getElementById("toggle_exams_label").style.display='none';
+    document.getElementById('toggle_lessons').style.display='none';
     var calendarList = document.createElement("SELECT");
     calendarList.id='calendar_list';
     calendarList.style.display='none';
