@@ -45,6 +45,10 @@
         {
           "version": "1.4.3",
           "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.4.3/hujidigmixport-1.4.3-fx.xpi"
+        },
+        {
+          "version": "1.5.0",
+          "update_link": "https://github.com/AviH0/DigmiXport/releases/download/v1.5.0/hujidigmixport-1.5.0-fx.xpi"
         }
 
 
