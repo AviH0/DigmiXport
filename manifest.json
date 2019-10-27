@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "HujiDigmiXport",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Allows exporting ICal calendar from Digmi for HUJI.",
   "id": "{b143720d-78c9-4b1e-9ad1-520459021274}",
   "icons": {
