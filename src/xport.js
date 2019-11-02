@@ -149,7 +149,7 @@ chrome.runtime.onMessage.addListener(
             }
             parsedCalendarFromReq.ics += "END:VCALENDAR";
             if(!all_exam_times_set){
-                alert("Please note: some exams' hours have not yet been set.")
+                parsedCalendarFromReq['message'] = "Please note: some exams' hours have not yet been set.";
             }
             sendResponse(parsedCalendarFromReq);
         }

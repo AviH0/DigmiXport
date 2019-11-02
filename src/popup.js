@@ -190,6 +190,9 @@ function parseExamDates(exams, after) {
 
 function gotExamEvents(newParsedCalendar, after){
     parsedCalendar = newParsedCalendar;
+    if (newParsedCalendar.hasOwnProperty("message")){
+        alert(newParsedCalendar.message);
+    }
     after();
 }
 
