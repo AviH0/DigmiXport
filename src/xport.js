@@ -166,7 +166,7 @@ function tableRecieved(packedStuff) {
 
 
 function exportCal() {
-    if (!document.documentURI.startsWith("https://www.digmi.org/huji/")) {
+    if (!document.documentURI.startsWith("https://www.digmi.org/huji/") &&!document.documentURI.startsWith("http://www.digmi.org/huji/")&&!document.documentURI.startsWith("http://digmi.org/huji/") &&!document.documentURI.startsWith("https://digmi.org/huji/")) {
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
