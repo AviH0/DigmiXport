@@ -70,10 +70,12 @@ browser.runtime.onMessage.addListener(
             parsedCalendarFromReq = request.parsedCalendar;
             exams = request.exams;
             parsedCalendarFromReq.ics = parsedCalendarFromReq.ics.replace("END:VCALENDAR", "");
+            var all_exam_times_set = true;
             for (course in exams) {
                 var courseExams = {};
                 for (exam in exams[course]) {
-                    var wantedSemester = coursesAndSemesters[course];
+                    var wantedSemester = coursesAndSemesters[course].semester;
+                    var course_name = coursesAndSemesters[course].name;
                     if (exams[course][exam].semester != wantedSemester) {
                         break;
                     }
@@ -84,16 +86,18 @@ browser.runtime.onMessage.addListener(
                         eDay = eDate.substring(0, 2);
                         eDate = eYear + '-' + eMonth + '-' + eDay;
                         if (exams[course][exam].time.match(/\d\d:\d\d/) == null) {
+                            all_exam_times_set = false;
                             exams[course][exam].time = "00:00";
+                            exams[course][exam].moed += " - טרם נקבעה שעה";
                         }
                         dateTimeStart = eDate + 'T' + exams[course][exam].time + ':00';
                         dateVar = new Date(dateTimeStart);
                         THREEHOURS = 10800000;
-                        ONEHOUR = THREEHOURS/3;
+                        ONEHOUR = THREEHOURS / 3;
                         length_of_exam = exams[course][exam].length * ONEHOUR;
                         endDateVar = new Date(dateVar.getTime() + length_of_exam);
-                        dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth()+1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes())+':00';
-                        summary = exams[course][exam].course + ": " + exams[course][exam].semester + exams[course][exam].moed;
+                        dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth() + 1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes()) + ':00';
+                        summary = course_name + '(' + exams[course][exam].course + "): " + exams[course][exam].semester + exams[course][exam].moed;
                         courseExams[exams[course][exam].moed] = {
                             gEvent: {
                                 'end': {
@@ -140,6 +144,10 @@ browser.runtime.onMessage.addListener(
                 // parsedCalendarFromReq.ics += result;
             }
             parsedCalendarFromReq.ics += "END:VCALENDAR";
+            if (!all_exam_times_set) {
+                alert("Please note: some exams' hours have not yet been set.")
+                parsedCalendarFromReq['message'] = "Please note: some exams' hours have not yet been set.";
+            }
             sendResponse(parsedCalendarFromReq);
         }
         return true;  // Will respond asynchronously.
@@ -148,7 +156,7 @@ browser.runtime.onMessage.addListener(
 function tableRecieved(packedStuff) {
 
     semInfo = [];
-    for(inf in packedStuff.semesterInformation){
+    for (inf in packedStuff.semesterInformation) {
         semInfo.push(packedStuff.semesterInformation[inf]);
     }
     semesterInformation["סמסטר א"] = semInfo[0];
@@ -162,7 +170,8 @@ function tableRecieved(packedStuff) {
 
 
 function exportCal() {
-     if (!document.documentURI.startsWith("https://www.digmi.org/huji/") &&!document.documentURI.startsWith("http://www.digmi.org/huji/")&&!document.documentURI.startsWith("http://digmi.org/huji/") &&!document.documentURI.startsWith("https://digmi.org/huji/")) {        alert('Please Use Addon on https://www.digmi.org/huji/ .');
+    if (!document.documentURI.startsWith("https://www.digmi.org/huji/") && !document.documentURI.startsWith("http://www.digmi.org/huji/") && !document.documentURI.startsWith("http://digmi.org/huji/") && !document.documentURI.startsWith("https://digmi.org/huji/")) {
+        alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
     id = 0;
@@ -182,7 +191,8 @@ function exportCal() {
                 if (i == j) {
                     // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
                     // download_file("Calendar.ics", calendar + "END:VCALENDAR");
-                     browser.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo',
+                    browser.runtime.sendMessage({
+                        contentScriptQuery: 'gotCalendarInfo',
                         parsedCalendar: {
                             'ics': calendar + "END:VCALENDAR",
                             'eventList': eventsForGoogle,
@@ -223,16 +233,16 @@ function extractData(courseData) {
 
                 var currentEvent = {
 
-                    'end':{
-                        'dateTime' :"",
+                    'end': {
+                        'dateTime': "",
                         "timeZone": "Asia/Jerusalem"
                     },
-                    'start':{
-                        'dateTime':"",
+                    'start': {
+                        'dateTime': "",
                         "timeZone": "Asia/Jerusalem"
                     },
                     'location': "",
-                    'summary':'',
+                    'summary': '',
                     'recurrence': []
 
                 };
@@ -244,8 +254,7 @@ function extractData(courseData) {
                 }
 
                 lessonSemester = hours[hour].semester;
-                coursesAndSemesters[courseId] = lessonSemester;
-
+                coursesAndSemesters[courseId] = {semester: lessonSemester, name: courseName};
                 //date = translateDayToDate(hours[hour].day, hours[hour].semester);
                 date = dateDict[lessonSemester][hours[hour].day];
 
@@ -254,8 +263,6 @@ function extractData(courseData) {
 
                 aTime = timeInDay[0];
                 bTime = timeInDay[1];
-
-
 
 
                 aTime = aTime.replace(':', '');
@@ -280,12 +287,12 @@ function extractData(courseData) {
                 currentEvent.summary = title;
                 currentEvent.location = place;
 
-                startTimeForGoogle = startTime.substr(0,2) + ':'  +startTime.substr(2,2) + ':00';
-                endTimeForGoogle = endTime.substr(0,2) +':' +endTime.substr(2,2) + ':00';
-                dateForGoogle = date.substr(0,4) + '-' + date.substr(4,2) + '-' +date.substr(6,2);
+                startTimeForGoogle = startTime.substr(0, 2) + ':' + startTime.substr(2, 2) + ':00';
+                endTimeForGoogle = endTime.substr(0, 2) + ':' + endTime.substr(2, 2) + ':00';
+                dateForGoogle = date.substr(0, 4) + '-' + date.substr(4, 2) + '-' + date.substr(6, 2);
 
-                startDateForGoogle = dateForGoogle + 'T' +startTimeForGoogle;
-                endDateForGoogle = dateForGoogle + 'T' +endTimeForGoogle;
+                startDateForGoogle = dateForGoogle + 'T' + startTimeForGoogle;
+                endDateForGoogle = dateForGoogle + 'T' + endTimeForGoogle;
 
                 currentEvent.start.dateTime = startDateForGoogle;
                 currentEvent.end.dateTime = endDateForGoogle;

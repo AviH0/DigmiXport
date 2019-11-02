@@ -1,5 +1,5 @@
 var parsedCalendar;
- var year = "2020"; // NEED TO CHANGE THIS FOR NEXT YEAR
+var year = "2020"; // NEED TO CHANGE THIS FOR NEXT YEAR
 load();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,39 +7,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-function authorizeClicked(){
+function authorizeClicked() {
     isExams = document.getElementById('toggle_exams');
     isLessons = document.getElementById('toggle_lessons');
-    if(isExams.checked && isLessons.checked){
+    if (isExams.checked && isLessons.checked) {
         getExamEvents(parsedCalendar, handleClientLoad);
-    }
-        else if(isExams.checked){
+    } else if (isExams.checked) {
         parsedCalendar.ics = "BEGIN:VCALENDAR\nVERSION:2.0\n";
         parsedCalendar.eventList = [];
         getExamEvents(parsedCalendar, handleClientLoad)
-    }
-    else if(isLessons.checked){
+    } else if (isLessons.checked) {
         handleClientLoad();
     }
 }
 
-function downloadIcs(){
-   isExams = document.getElementById('toggle_exams');
+function downloadIcs() {
+    isExams = document.getElementById('toggle_exams');
     isLessons = document.getElementById('toggle_lessons');
-    if(isExams.checked && isLessons.checked){
+    if (isExams.checked && isLessons.checked) {
         getExamEvents(parsedCalendar, downloadNow);
-    }
-        else if(isExams.checked){
+    } else if (isExams.checked) {
         parsedCalendar.ics = "BEGIN:VCALENDAR\nVERSION:2.0\n";
         parsedCalendar.eventList = [];
         getExamEvents(parsedCalendar, downloadNow)
-    }
-    else if(isLessons.checked){
+    } else if (isLessons.checked) {
         downloadNow();
     }
 }
 
-function downloadNow(){
+function downloadNow() {
     download_file('Calendar.ics', parsedCalendar.ics);
 }
 
@@ -80,50 +76,53 @@ browser.runtime.onMessage.addListener(
         if (request.contentScriptQuery == 'getCalendarInfo') {
             xhr = new XMLHttpRequest();
             xhr.open('GET', "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%94%D7%A9%D7%A0%D7%94-%D7%94%D7%90%D7%A7%D7%93%D7%9E%D7%99%D7%AA");
-            xhr.addEventListener('loadend', result=>parseCalendar(sendResponse, result));
+            xhr.addEventListener('loadend', result => parseCalendar(sendResponse, result));
             xhr.send();
             return true;  // Will respond asynchronously.
         }
-        if(request.contentScriptQuery == 'gotCalendarInfo'){
+        if (request.contentScriptQuery == 'gotCalendarInfo') {
             parsedCalendar = request.parsedCalendar;
-            document.getElementById('loading').style.display='none';
-            document.getElementById('btn_save').style.display='inline-block';
-            document.getElementById('authorize_button').style.display='inline-block';
-            document.getElementById('toggle_exams').style.display='inline';
-            document.getElementById('toggle_exams').style.display='inline-block';
-            document.getElementById('toggle_exams_label').style.display='inline-block';
-            document.getElementById('toggle_lessons').style.display='inline-block';
-            document.getElementById('toggle_lessons_label').style.display='inline-block';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('btn_save').style.display = 'inline-block';
+            document.getElementById('authorize_button').style.display = 'inline-block';
+            document.getElementById('toggle_exams').style.display = 'inline';
+            document.getElementById('toggle_exams').style.display = 'inline-block';
+            document.getElementById('toggle_exams_label').style.display = 'inline-block';
+            document.getElementById('toggle_lessons').style.display = 'inline-block';
+            document.getElementById('toggle_lessons_label').style.display = 'inline-block';
             document.getElementById('btn_save').addEventListener('click', downloadIcs);
             document.getElementById('authorize_button').addEventListener('click', authorizeClicked);
 
         }
     });
-function parseCalendar(sendResponse, table){
+
+function parseCalendar(sendResponse, table) {
     parsedCalendar = sendResponse(tableLoaded(table));
 
 }
+
 function getParsedCalendar() {
     return parsedCalendar;
 }
+
 function getExamEvents(parsedCalendar, after) {
     datevar = new Date();
     let exams = {};
-    for(c in parsedCalendar['courses']){
-       course = c;
+    for (c in parsedCalendar['courses']) {
+        course = c;
         course_url = "http://shnaton.huji.ac.il/index.php?peula=Simple&starting=1&negishut=0&&faculty=0&prisa=2&word=&option=1&language=&shiur=&course=" + course + "&year=" + year;
         var course_req = new XMLHttpRequest();
         course_req.open('GET', course_url);
-        course_req.addEventListener('loadend', function(){
+        course_req.addEventListener('loadend', function () {
             var course_parser = new DOMParser();
             var course_doc = course_parser.parseFromString(this.responseText, "text/html");
             elements = course_doc.getElementsByClassName("courseTD text");
             exam_length = 0;
-            for(element in elements){
-                if(elements[element].innerHTML.includes("&nbsp; | &nbsp;")){
+            for (element in elements) {
+                if (elements[element].innerHTML.includes("&nbsp; | &nbsp;")) {
                     xcourse = elements[element].innerHTML.match(/\d+/);
                 }
-                if(elements[element].innerText.includes("משך הבחינה")){
+                if (elements[element].innerText.includes("משך הבחינה")) {
                     var get_length = /\d+.\d+/;
                     exam_length = parseFloat(elements[element].innerText.match(get_length));
                     break;
@@ -140,7 +139,7 @@ function getExamEvents(parsedCalendar, after) {
                 var parser = new DOMParser();
                 var doc = parser.parseFromString(this.responseText, "text/html");
                 examTable = doc.getElementsByClassName('courseTab_td');
-                for (i=0; i<examTable.length;i++){
+                for (i = 0; i < examTable.length; i++) {
                     try {
 
                         examDate = examTable[i].innerText;
@@ -165,13 +164,12 @@ function getExamEvents(parsedCalendar, after) {
                             course: ccourse
                         };
                         exams[ccourse].push(exam);
-                    }
-                    catch (e) {
+                    } catch (e) {
                         alert("Unknown problem while fetching exam dates, events might not be complete");
                         console.log(e);
                     }
                 }
-                if(Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length){
+                if (Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length) {
                     parseExamDates(exams, after);
                 }
             });
@@ -181,18 +179,24 @@ function getExamEvents(parsedCalendar, after) {
     }
 
 }
+
 function parseExamDates(exams, after) {
-    browser.tabs.query({url: "*://*.digmi.org/*"}).then( function (tabs) {
+    browser.tabs.query({url: "*://*.digmi.org/*"}).then(function (tabs) {
         browser.tabs.sendMessage(tabs[0].id, {
             contentScriptQuery: 'getExamEvents',
             parsedCalendar: parsedCalendar,
             exams: exams
-        },function(response) {gotExamEvents(response, after);});
+        }, function (response) {
+            gotExamEvents(response, after);
+        });
     });
 }
 
-function gotExamEvents(newParsedCalendar, after){
+function gotExamEvents(newParsedCalendar, after) {
     parsedCalendar = newParsedCalendar;
+    if (newParsedCalendar.hasOwnProperty("message")) {
+        alert(newParsedCalendar.message);
+    }
     after();
 }
 
@@ -201,10 +205,11 @@ function load(e) {
     // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
     // browser.tabs.executeScript({'file': 'jqueryui_1.8.18.js'});
     // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
-    browser.tabs.query({url:['*://*.digmi.org/*']}).then(tabArray => browser.tabs.executeScript(tabArray[0].id,{'file': 'xport.js'}));
+    browser.tabs.query({url: ['*://*.digmi.org/*']}).then(tabArray => browser.tabs.executeScript(tabArray[0].id, {'file': 'xport.js'}));
 
 
 }
+
 function download_file(name, contents, mime_type) {
     mime_type = mime_type || "text/plain";
 
@@ -225,7 +230,8 @@ function download_file(name, contents, mime_type) {
     dlink.click();
     dlink.remove();
 }
-function tableLoaded(e){
+
+function tableLoaded(e) {
 
     var parser = new DOMParser();
 
@@ -375,8 +381,9 @@ function tableLoaded(e){
             end: semesterBendsAt
         }
     };
-    return {semesterInformation:semesterInformation, exclusionDates:exclusionDates, dateDict:dateDict};
+    return {semesterInformation: semesterInformation, exclusionDates: exclusionDates, dateDict: dateDict};
 }
+
 function findDays(semester, year, month, date) {
     datevar = new Date();
     datevar.setFullYear(parseInt(year), parseInt(month) - 1, parseInt(date));
@@ -403,12 +410,13 @@ function findDays(semester, year, month, date) {
 
 
 }
+
 function getElementsByTagName(element, tagName) {
     var data = [];
     var descendants = element.getDescendants();
-    for(i in descendants) {
+    for (i in descendants) {
         var elt = descendants[i].asElement();
-        if( elt !=null && elt.getName()== tagName) data.push(elt);
+        if (elt != null && elt.getName() == tagName) data.push(elt);
     }
     return data;
 }
