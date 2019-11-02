@@ -74,10 +74,12 @@ chrome.runtime.onMessage.addListener(
             parsedCalendarFromReq = request.parsedCalendar;
             exams = request.exams;
             parsedCalendarFromReq.ics = parsedCalendarFromReq.ics.replace("END:VCALENDAR", "");
+            var all_exam_times_set = true;
             for (course in exams) {
                 var courseExams = {};
                 for (exam in exams[course]) {
-                    var wantedSemester = coursesAndSemesters[course];
+                    var wantedSemester = coursesAndSemesters[course].semester;
+                    var course_name = coursesAndSemesters[course].name;
                     if (exams[course][exam].semester != wantedSemester) {
                         break;
                     }
@@ -97,7 +99,7 @@ chrome.runtime.onMessage.addListener(
                         length_of_exam = exams[course][exam].length * ONEHOUR;
                         endDateVar = new Date(dateVar.getTime() + length_of_exam);
                         dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth()+1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes())+':00';
-                        summary = exams[course][exam].course + ": " + exams[course][exam].semester + exams[course][exam].moed;
+                        summary = course_name + '(' + exams[course][exam].course + "): " + exams[course][exam].semester + exams[course][exam].moed;
                         courseExams[exams[course][exam].moed] = {
                             gEvent: {
                                 'end': {
@@ -245,7 +247,7 @@ function extractData(courseData) {
                 }
 
                 lessonSemester = hours[hour].semester;
-                coursesAndSemesters[courseId] = lessonSemester;
+                coursesAndSemesters[courseId] = { semester: lessonSemester, name: courseName};
 
                 //date = translateDayToDate(hours[hour].day, hours[hour].semester);
                 date = dateDict[lessonSemester][hours[hour].day];
