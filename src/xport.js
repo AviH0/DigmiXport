@@ -182,12 +182,13 @@ function exportCal() {
     var calendar;
     calendar = "BEGIN:VCALENDAR\n";
     calendar += "VERSION:2.0\n";
+    url_prefix = document.documentURI.match(/http[s]?:\/\/[w]*\.?/);
     var i = 0;
     var j = 0;
     for (c in cookies_cour) {
         $.ajax({
             type: 'GET',
-            url: 'https://www.digmi.org/huji/get_course.php?year=' + year + '&course=' + c,
+            url: url_prefix + 'digmi.org/huji/get_course.php?year=' + year + '&course=' + c,
             success: function (data) {
                 calendar += extractData(data);
                 i++;
