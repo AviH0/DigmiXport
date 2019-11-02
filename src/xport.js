@@ -93,7 +93,9 @@ chrome.runtime.onMessage.addListener(
                         dateTimeStart = eDate + 'T' + exams[course][exam].time + ':00';
                         dateVar = new Date(dateTimeStart);
                         THREEHOURS = 10800000;
-                        endDateVar = new Date(dateVar.getTime() + THREEHOURS);
+                        ONEHOUR = THREEHOURS/3;
+                        length_of_exam = exams[course][exam].length * ONEHOUR;
+                        endDateVar = new Date(dateVar.getTime() + length_of_exam);
                         dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth()+1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes())+':00';
                         summary = exams[course][exam].course + ": " + exams[course][exam].semester + exams[course][exam].moed;
                         courseExams[exams[course][exam].moed] = {
