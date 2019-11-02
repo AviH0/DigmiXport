@@ -90,7 +90,9 @@ chrome.runtime.onMessage.addListener(
                         eDay = eDate.substring(0, 2);
                         eDate = eYear + '-' + eMonth + '-' + eDay;
                         if (exams[course][exam].time.match(/\d\d:\d\d/) == null) {
+                            all_exam_times_set = false;
                             exams[course][exam].time = "00:00";
+                            exams[course][exam].moed += " - טרם נקבעה שעה"
                         }
                         dateTimeStart = eDate + 'T' + exams[course][exam].time + ':00';
                         dateVar = new Date(dateTimeStart);
