@@ -1,7 +1,7 @@
-var API_KEY = 'AIzaSyD6JAUasHzAVvv_f7bOtYeGPPcZO7sn6F0';
-var SCOPE ="https://www.googleapis.com/auth/calendar";
-var Client_ID="411692199033-5anlhh5i3mhvh6j0p6oc4cgt6hd5skae.apps.googleusercontent.com";
-var REDIRECT_URL = "https://www.cse.huji.ac.il/~avih/digmixport/";
+var API_KEY = '----------------------------------';
+var SCOPE ="---------------------------------------";
+var Client_ID="--------------------------------------------";
+var REDIRECT_URL = "---------------------------";
 
 function getCalendarList(callback, token){
     let init = {

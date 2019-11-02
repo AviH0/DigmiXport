@@ -110,50 +110,74 @@ function getExamEvents(parsedCalendar, after) {
     datevar = new Date();
     let exams = {};
     for(c in parsedCalendar['courses']){
-        course = c;
-        var shnatonReq = new XMLHttpRequest();
-        shnatonReq.open('POST', 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + course);
-        shnatonReq.addEventListener('loadend', function () {
-            var re = /\d+/;
-            ccourse = this.responseText.match(re)[0];
-            exams[ccourse] = [];
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(this.responseText, "text/html");
-            examTable = doc.getElementsByClassName('courseTab_td');
-            for (i=0; i<examTable.length;i++){
-                try {
+       course = c;
+        course_url = "http://shnaton.huji.ac.il/index.php?peula=Simple&starting=1&negishut=0&&faculty=0&prisa=2&word=&option=1&language=&shiur=&course=" + course + "&year=" + year;
+        var course_req = new XMLHttpRequest();
+        course_req.open('GET', course_url);
+        course_req.addEventListener('loadend', function(){
+            var course_parser = new DOMParser();
+            var course_doc = course_parser.parseFromString(this.responseText, "text/html");
+            elements = course_doc.getElementsByClassName("courseTD text");
+            exam_length = 0;
+            for(element in elements){
+                if(elements[element].innerHTML.includes("&nbsp; | &nbsp;")){
+                    xcourse = elements[element].innerHTML.match(/\d+/);
+                }
+                if(elements[element].innerText.includes("משך הבחינה")){
+                    var get_length = /\d+.\d+/;
+                    exam_length = parseFloat(elements[element].innerText.match(get_length));
+                    break;
+                }
+            }
+            exam_url = 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + xcourse;
+            var exam_list_req = new XMLHttpRequest();
+            exam_list_req.open('POST', exam_url);
+            exam_list_req.addEventListener('loadend', function () {
+                var re = /\d+/;
+                ccourse = this.responseText.match(re)[0];
+                exams[ccourse] = [];
 
-                    examDate = examTable[i].innerText;
-                    i++;
-                    examHour = examTable[i].innerText;
-                    i++;
-                    examComments = examTable[i].innerText;
-                    i++;
-                    examLocation = examTable[i].innerText;
-                    i++;
-                    examMoed = examTable[i].innerText;
-                    i++;
-                    examSem = examTable[i].innerText;
-                    exam = {
-                        date: examDate,
-                        time: examHour,
-                        comments: examComments,
-                        location: examLocation,
-                        moed: examMoed,
-                        semester: examSem,
-                        course: ccourse
-                    };
-                    exams[ccourse].push(exam);
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(this.responseText, "text/html");
+                examTable = doc.getElementsByClassName('courseTab_td');
+                for (i=0; i<examTable.length;i++){
+                    try {
+
+                        examDate = examTable[i].innerText;
+                        i++;
+                        examHour = examTable[i].innerText;
+                        i++;
+                        examComments = examTable[i].innerText;
+                        i++;
+                        examLocation = examTable[i].innerText;
+                        i++;
+                        examMoed = examTable[i].innerText;
+                        i++;
+                        examSem = examTable[i].innerText;
+                        exam = {
+                            date: examDate,
+                            time: examHour,
+                            length: exam_length,
+                            comments: examComments,
+                            location: examLocation,
+                            moed: examMoed,
+                            semester: examSem,
+                            course: ccourse
+                        };
+                        exams[ccourse].push(exam);
+                    }
+                    catch (e) {
+                        alert("Unknown problem while fetching exam dates, events might not be complete");
+                        console.log(e);
+                    }
                 }
-                catch (e) {
-                    console.log(e);
+                if(Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length){
+                    parseExamDates(exams, after);
                 }
-            }
-            if(Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length){
-                parseExamDates(exams, after);
-            }
+            });
+            exam_list_req.send();
         });
-        shnatonReq.send();
+        course_req.send();
     }
 
 }
