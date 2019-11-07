@@ -165,31 +165,36 @@ function createNewCalendar(token) {
 }
 
 function exportEvents(calId, token){
-    eventList = parsedCalendar['eventList'];
-    errorFlag = 0;
-    for(eventIndex in eventList){
-        let newEvent = {
-            method: 'POST',
-            async: true,
-            headers: {
-                Authorization: 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(eventList[eventIndex])
-        };
-        fetch(
-            'https://www.googleapis.com/calendar/v3/calendars/'+calId +'/events',
-            newEvent).then((response) => response.json())
-            .then((data)=>{
-                if(data.hasOwnProperty('error')) {
-                    errorFlag = 1;
-                }
-    });
+    try {
+        eventList = parsedCalendar['eventList'];
+        errorFlag = 0;
+        for (eventIndex in eventList) {
+            let newEvent = {
+                method: 'POST',
+                async: true,
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventList[eventIndex])
+            };
+            fetch(
+                'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events',
+                newEvent).then((response) => response.json())
+                .then((data) => {
+                    if (data.hasOwnProperty('error')) {
+                        errorFlag = 1;
+                    }
+                });
+        }
+        if (errorFlag) {
+            alert("There were some errors while exporting");
+        } else {
+            alert("Export successful!");
+        }
     }
-    if(errorFlag){
-        alert("There were some errors while exporting");
-    }
-    else {
-        alert("Export successful!");
+    catch (e) {
+        alert("An unexpected error occured! please save the following log file and attach it to an issue on https://github.com/AviH0/DigmiXport/issues .");
+        download_file("error_log.log", "exception: " + e + "\nparsedCalendar contents:\n" + JSON.stringify(parsedCalendar), "text/plain");
     }
 }
