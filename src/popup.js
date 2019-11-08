@@ -124,6 +124,7 @@ function getExamEvents(parsedCalendar, after) {
                     exam_length = parseFloat(elements[element].innerText.match(get_length));
                     break;
                 }
+                
             }
             exam_url = 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + xcourse;
             var exam_list_req = new XMLHttpRequest();

@@ -1,4 +1,4 @@
-var API_KEY = '-----------------------------';
+var API_KEY = 'AIzaSyD6JAUasHzAVvv_f7bOtYeGPPcZO7sn6F0';
 
 
 function getCalendarList(callback, token) {
@@ -100,7 +100,11 @@ function populateDropList(data, token) {
         }
         exportButton = document.getElementById('export');
         exportButton.innerText = 'Publish calendar to \"' + currentCal.summary + "\"";
-        exportButton.onclick = () => exportEvents(currentCal.id, token);
+        exportButton.onclick = () => {
+            exportEvents(currentCal.id, token);
+            exportButton.innerText = "Please wait..."
+            exportButton.disabled = true;
+        }
         exportButton.style.display = 'inline';
     };
 }
