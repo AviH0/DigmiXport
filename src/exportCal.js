@@ -102,7 +102,7 @@ function populateDropList(data, token) {
         exportButton.innerText = 'Publish calendar to \"' + currentCal.summary + "\"";
         exportButton.onclick = () => {
             exportEvents(currentCal.id, token);
-            exportButton.innerText = "Please wait..."
+            exportButton.innerText = "Please wait, this may take a minute...";
             exportButton.disabled = true;
         }
         exportButton.style.display = 'inline';
