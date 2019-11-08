@@ -1,7 +1,7 @@
 var API_KEY = '-----------------------------';
 
 
-function getCalendarList(callback, token){
+function getCalendarList(callback, token) {
     let init = {
         method: 'GET',
         async: true,
@@ -15,46 +15,46 @@ function getCalendarList(callback, token){
         'https://www.googleapis.com/calendar/v3/users/me/calendarList?&key=' + API_KEY,
         init)
         .then((response) => response.json())
-        .then(data=>callback(data, token));
+        .then(data => callback(data, token));
 }
 
-function createForm(){
-    document.getElementById("toggle_exams").style.display='none';
-    document.getElementById("toggle_exams_label").style.display='none';
-    document.getElementById('toggle_lessons').style.display='none';
-    document.getElementById('toggle_lessons_label').style.display='none';
+function createForm() {
+    document.getElementById("toggle_exams").style.display = 'none';
+    document.getElementById("toggle_exams_label").style.display = 'none';
+    document.getElementById('toggle_lessons').style.display = 'none';
+    document.getElementById('toggle_lessons_label').style.display = 'none';
 
     var calendarList = document.createElement("SELECT");
-    calendarList.id='calendar_list';
-    calendarList.style.display='none';
+    calendarList.id = 'calendar_list';
+    calendarList.style.display = 'none';
     var selectLabel = document.createElement('label');
     selectLabel.innerText = 'Select target calendar, or create new calendar';
-    selectLabel.htmlFor='calendar_list';
-    selectLabel.id='select_label';
-    selectLabel.style.display='none';
+    selectLabel.htmlFor = 'calendar_list';
+    selectLabel.id = 'select_label';
+    selectLabel.style.display = 'none';
     var selectButton = document.createElement('button');
     selectButton.innerText = 'Select';
-    selectButton.id= 'select';
-    selectButton.style.display='none';
+    selectButton.id = 'select';
+    selectButton.style.display = 'none';
 
     var editText = document.createElement("INPUT");
     editText.setAttribute("type", "text");
     editText.placeholder = "Enter Calendar Name";
-    editText.id='new_calendar_name';
-    editText.style.display='none';
+    editText.id = 'new_calendar_name';
+    editText.style.display = 'none';
     var newCalLabel = document.createElement('label');
     newCalLabel.innerText = 'Enter name for new calendar';
-    newCalLabel.htmlFor='new_calendar_name';
-    newCalLabel.id='new_cal_label';
-    newCalLabel.style.display='none';
+    newCalLabel.htmlFor = 'new_calendar_name';
+    newCalLabel.id = 'new_cal_label';
+    newCalLabel.style.display = 'none';
     var newCalendarButton = document.createElement('button');
-    newCalendarButton.id='create';
+    newCalendarButton.id = 'create';
     newCalendarButton.innerText = "Create";
-    newCalendarButton.style.display='none';
+    newCalendarButton.style.display = 'none';
 
     var exportButton = document.createElement('button');
-    exportButton.id='export';
-    exportButton.style.display='none';
+    exportButton.id = 'export';
+    exportButton.style.display = 'none';
 
     body = document.getElementsByTagName('body')[0];
 
@@ -67,42 +67,41 @@ function createForm(){
     body.appendChild(exportButton);
 
 
-
 }
 
-function populateDropList(data, token){
+function populateDropList(data, token) {
     calendarList = document.getElementById('calendar_list');
-    for(option in calendarList.options){
+    for (option in calendarList.options) {
         calendarList.remove(calendarList.options[option]);
     }
-    for(cal in data.items){
+    for (cal in data.items) {
         var calName = document.createElement("option");
         calName.text = data.items[cal].summary;
         calName.id = cal;
-        calendarList.add(calName,cal);
+        calendarList.add(calName, cal);
     }
     var calName = document.createElement("option");
     calName.text = "Create New Calendar...";
-    calendarList.add(calName, cal+1);
-    calendarList.style.display='inline-block';
+    calendarList.add(calName, cal + 1);
+    calendarList.style.display = 'inline-block';
     let selectLabel = document.getElementById('select_label');
-    selectLabel.style.display='inline';
+    selectLabel.style.display = 'inline';
 
 
     selectButton = document.getElementById('select');
-    selectButton.style.display='inline';
+    selectButton.style.display = 'inline';
     selectButton.onclick = function () {
         selectedCalendarInedx = calendarList.selectedIndex;
         currentCal = data.items[calendarList.options[selectedCalendarInedx].id];
 
-        if(calendarList.options[selectedCalendarInedx].text == 'Create New Calendar...') {
+        if (calendarList.options[selectedCalendarInedx].text == 'Create New Calendar...') {
             createNewCalendar(token);
             return;
         }
         exportButton = document.getElementById('export');
         exportButton.innerText = 'Publish calendar to \"' + currentCal.summary + "\"";
-        exportButton.onclick = ()=> exportEvents(currentCal.id, token);
-        exportButton.style.display='inline';
+        exportButton.onclick = () => exportEvents(currentCal.id, token);
+        exportButton.style.display = 'inline';
     };
 }
 
@@ -116,10 +115,7 @@ function handleClientLoad() {
     });
 
 
-
 }
-
-
 
 
 function createNewCalendar(token) {
@@ -132,7 +128,7 @@ function createNewCalendar(token) {
     newCalendarButton.onclick = function () {
 
         newCalendarName = editText.value;
-        if(newCalendarName == "") {
+        if (newCalendarName == "") {
             alert("Please type a name for the new calendar!");
             return;
         }
@@ -148,52 +144,58 @@ function createNewCalendar(token) {
         };
         fetch(
             'https://www.googleapis.com/calendar/v3/calendars', newCalendarRequest)
-            .then((response) =>{
-                editText.style.display='none';
-                newCalendarButton.style.display='none';
-                newCalLabel.style.display='none';
+            .then((response) => {
+                editText.style.display = 'none';
+                newCalendarButton.style.display = 'none';
+                newCalLabel.style.display = 'none';
                 alert("calendar created!");
                 getCalendarList(populateDropList, token)
             });
-        newCalendarButton.disabled=true;
-        newCalendarButton.innerText='Please wait...';
+        newCalendarButton.disabled = true;
+        newCalendarButton.innerText = 'Please wait...';
     };
-    newCalLabel.style.display='inline-block';
-    editText.style.display='inline';
-    newCalendarButton.style.display='inline';
+    newCalLabel.style.display = 'inline-block';
+    editText.style.display = 'inline';
+    newCalendarButton.style.display = 'inline';
 
 }
 
-function exportEvents(calId, token){
+async function exportEvents(calId, token) {
     try {
         eventList = parsedCalendar['eventList'];
         errorFlag = 0;
+        i = 0;
         for (eventIndex in eventList) {
             let newEvent = {
                 method: 'POST',
-                async: true,
+                // async: true,
                 headers: {
                     Authorization: 'Bearer ' + token,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(eventList[eventIndex])
             };
-            fetch(
-                'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events',
-                newEvent).then((response) => response.json())
-                .then((data) => {
-                    if (data.hasOwnProperty('error')) {
-                        errorFlag = 1;
-                    }
-                });
+            response = await fetch(
+                'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events', newEvent);
+            body = await response.json();
+            data = await body;
+            if (data.hasOwnProperty('error')) {
+                errorFlag = 1;
+            }
+            if (!data.hasOwnProperty("status") || data.status != "confirmed") {
+                errorFlag = 1;
+            }
+            i++;
+            if (i == Object.keys(eventList).length) {
+                if (errorFlag) {
+                    alert("There were some errors while exporting");
+                } else {
+                    alert("Export successful!");
+                }
+            }
         }
-        if (errorFlag) {
-            alert("There were some errors while exporting");
-        } else {
-            alert("Export successful!");
-        }
-    }
-    catch (e) {
+
+    } catch (e) {
         alert("An unexpected error occured! please save the following log file and attach it to an issue on https://github.com/AviH0/DigmiXport/issues .");
         download_file("error_log.log", "exception: " + e + "\nparsedCalendar contents:\n" + JSON.stringify(parsedCalendar), "text/plain");
     }
