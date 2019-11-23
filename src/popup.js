@@ -102,7 +102,7 @@ function parseCalendar(sendResponse, table){
     parsedCalendar = sendResponse(tableLoaded(table));
 
 }
-function getExamEvents(parsedCalendar, after) {
+async function getExamEvents(parsedCalendar, after) {
     datevar = new Date();
     let exams = {};
     for(c in parsedCalendar['courses']){
@@ -115,17 +115,20 @@ function getExamEvents(parsedCalendar, after) {
             var course_doc = course_parser.parseFromString(this.responseText, "text/html");
             elements = course_doc.getElementsByClassName("courseTD text");
             exam_length = 0;
-            for(element in elements){
-                if(elements[element].innerHTML.includes("&nbsp; | &nbsp;")){
+            var xcourse;
+            for(element in elements) {
+                if (elements[element].innerHTML == undefined){
+                    continue;
+                }
+                if (elements[element].innerHTML.includes("&nbsp; | &nbsp;")) {
                     xcourse = elements[element].innerHTML.match(/\d+/);
                 }
-                if(elements[element].innerText.includes("משך הבחינה")){
+                if (elements[element].innerText.includes("משך הבחינה")) {
                     var get_length = /\d+.\d+/;
                     exam_length = parseFloat(elements[element].innerText.match(get_length));
-                    break;
                 }
-                
             }
+
             exam_url = 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + xcourse;
             var exam_list_req = new XMLHttpRequest();
             exam_list_req.open('POST', exam_url);
@@ -133,40 +136,43 @@ function getExamEvents(parsedCalendar, after) {
                 var re = /\d+/;
                 ccourse = this.responseText.match(re)[0];
                 exams[ccourse] = [];
-
                 var parser = new DOMParser();
                 var doc = parser.parseFromString(this.responseText, "text/html");
                 examTable = doc.getElementsByClassName('courseTab_td');
-                for (i=0; i<examTable.length;i++){
-                    try {
+                if (examTable != undefined) {
+                    for (i = 0; i < examTable.length; i++) {
+                        try {
 
-                        examDate = examTable[i].innerText;
-                        i++;
-                        examHour = examTable[i].innerText;
-                        i++;
-                        examComments = examTable[i].innerText;
-                        i++;
-                        examLocation = examTable[i].innerText;
-                        i++;
-                        examMoed = examTable[i].innerText;
-                        i++;
-                        examSem = examTable[i].innerText;
-                        exam = {
-                            date: examDate,
-                            time: examHour,
-                            length: exam_length,
-                            comments: examComments,
-                            location: examLocation,
-                            moed: examMoed,
-                            semester: examSem,
-                            course: ccourse
-                        };
-                        exams[ccourse].push(exam);
+                            examDate = examTable[i].innerText;
+                            i++;
+                            examHour = examTable[i].innerText;
+                            i++;
+                            examComments = examTable[i].innerText;
+                            i++;
+                            examLocation = examTable[i].innerText;
+                            i++;
+                            examMoed = examTable[i].innerText;
+                            i++;
+                            examSem = examTable[i].innerText;
+                            exam = {
+                                date: examDate,
+                                time: examHour,
+                                length: exam_length,
+                                comments: examComments,
+                                location: examLocation,
+                                moed: examMoed,
+                                semester: examSem,
+                                course: ccourse
+                            };
+                            exams[ccourse].push(exam);
+                        } catch (e) {
+                            alert("Unknown problem while fetching exam dates, events might not be complete");
+                            console.log(e);
+                        }
                     }
-                    catch (e) {
-                        alert("Unknown problem while fetching exam dates, events might not be complete");
-                        console.log(e);
-                    }
+                }
+                else{
+                    exams[ccourse].push({"noexam":{"null": true}});
                 }
                 if(Object.keys(exams).length == Object.keys(parsedCalendar['courses']).length){
                     parseExamDates(exams, after);

@@ -78,6 +78,9 @@ chrome.runtime.onMessage.addListener(
             for (course in exams) {
                 var courseExams = {};
                 for (exam in exams[course]) {
+                    if (exams[course][exam].hasOwnProperty("null")){
+                        break;
+                    }
                     var wantedSemester = coursesAndSemesters[course].semester;
                     var course_name = coursesAndSemesters[course].name;
                     if (exams[course][exam].semester != wantedSemester) {
