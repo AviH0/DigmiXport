@@ -107,7 +107,7 @@ async function getExamEvents(parsedCalendar, after) {
     let exams = {};
     for(c in parsedCalendar['courses']){
         course = c;
-        course_url = "http://shnaton.huji.ac.il/index.php?peula=Simple&starting=1&negishut=0&&faculty=0&prisa=2&word=&option=1&language=&shiur=&course=" + course + "&year=" + year;
+        course_url = "https://shnaton.huji.ac.il/index.php?peula=Simple&starting=1&negishut=0&&faculty=0&prisa=2&word=&option=1&language=&shiur=&course=" + course + "&year=" + year;
         var course_req = new XMLHttpRequest();
         course_req.open('GET', course_url);
         course_req.addEventListener('loadend', function(){
@@ -129,7 +129,7 @@ async function getExamEvents(parsedCalendar, after) {
                 }
             }
 
-            exam_url = 'http://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + xcourse;
+            exam_url = 'https://shnaton.huji.ac.il/index.php?peula=CourseD&line=&year=' + year + '&detail=examDates&course=' + xcourse;
             var exam_list_req = new XMLHttpRequest();
             exam_list_req.open('POST', exam_url);
             exam_list_req.addEventListener('loadend', function () {
