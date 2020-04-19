@@ -13,9 +13,7 @@
     "activeTab",
     "tabs",
     "webRequest",
-    "identity",
-    "https://academic-secretary.huji.ac.il/*",
-    "https://shnaton.huji.ac.il/*"
+    "identity"
   ],
   "oauth2": {
     "client_id": "411692199033-rl6dk890b4qmcqj5a1trht5qq2sgtai2.apps.googleusercontent.com",
