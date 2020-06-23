@@ -79,12 +79,12 @@ chrome.runtime.onMessage.addListener(
                 var courseExams = {};
                 for (exam in exams[course]) {
                     if (exams[course][exam].hasOwnProperty("null")){
-                        break;
+                        continue;
                     }
                     var wantedSemester = coursesAndSemesters[course].semester;
                     var course_name = coursesAndSemesters[course].name;
                     if (exams[course][exam].semester != wantedSemester) {
-                        break;
+                        continue;
                     }
                     if (!courseExams.hasOwnProperty(exams[course][exam].moed)) {
                         eDate = exams[course][exam].date;
