@@ -2,6 +2,7 @@
 A Web Extension that allows exporting an ICal calendar from HUJI Digmi.
 
 ## Installation (Firefox):
+  #### Note: Firefox version is not currently actively supported. Please use chrome for now.
   Simply grab the xpi file from the latest [release](https://github.com/AviH0/DigmiXport/releases) and open it with mozilla firefox. Allow github to install the add-on if needed and proceed with the installation as prompted. The add-on is signed by mozilla and will auto-update as needed. After the installation is complete a button should appear in the browser toolbar with the clock icon on it.
 
 Note: Due to [this](https://bugzilla.mozilla.org/show_bug.cgi?id=1292701) issue with firefox, The popup has been relocated to a tab.
