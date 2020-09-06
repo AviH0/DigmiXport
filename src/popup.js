@@ -1,5 +1,6 @@
 var parsedCalendar;
-var year = "2020"; // NEED TO CHANGE THIS FOR NEXT YEAR
+var schediuleURL = "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%90%D7%A7%D7%93%D7%9E%D7%99-%D7%9C%D7%A9%D7%A0%D7%AA-%D7%94%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D-%D7%AA%D7%A9%D7%A4%D7%90-202021"
+var year = "2021"; // NEED TO CHANGE THIS FOR NEXT YEAR
 load();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -79,7 +80,7 @@ chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.contentScriptQuery == 'getCalendarInfo') {
             xhr = new XMLHttpRequest();
-            xhr.open('GET', "https://cors-anywhere.herokuapp.com/https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%94%D7%A9%D7%A0%D7%94-%D7%94%D7%90%D7%A7%D7%93%D7%9E%D7%99%D7%AA");
+            xhr.open('GET', "https://cors-anywhere.herokuapp.com/" + schediuleURL);
             xhr.addEventListener('loadend', result=>parseCalendar(sendResponse, result));
             xhr.send();
             return true;  // Will respond asynchronously.
@@ -305,7 +306,7 @@ function tableLoaded(e){
             semesterBendsAt = year_prefix + semesterBendsAtDates[2] + semesterBendsAtDates[1] + semesterBendsAtDates[0];
             semesterBendsAt = semesterBendsAt.trim();
         }
-        if (tableRows[row].cells[3].textContent.includes("לא יתקיימו לימודים או בחינות")) {
+        if (tableRows[row].cells.length >= 4 && tableRows[row].cells[3].textContent.includes("לא יתקיימו לימודים או בחינות")) {
             exclusionDate = tableRows[row].cells[2].textContent;
 
             // Parse which dates are to be excluded. this is fun.
@@ -319,6 +320,7 @@ function tableLoaded(e){
 
                         ii = makeTwoDigits(ii);
                         endRange[1] = makeTwoDigits(endRange[1]);
+                        endRange[2] = makeTwoDigits(endRange[2]);
 
                         exclusionDate = year_prefix + endRange[2] + endRange[1] + ii;
                         exclusionDates.push(exclusionDate);
@@ -326,14 +328,16 @@ function tableLoaded(e){
                 } else {
                     startRange = dateRange[0].split('.');
                     endRange = dateRange[1].split('.');
-                    if (parseInt(startRange[0]) < parseInt(startRange[1])) {
+                    if (parseInt(startRange[1]) < parseInt(endRange[1])) {
                         for (i = parseInt(startRange[0]); i < 32; i++) {
                             ii = i.toString();
 
                             ii = makeTwoDigits(ii);
                             startRange[1] = makeTwoDigits(startRange[1]);
+                            endRange[2] = makeTwoDigits(endRange[2]);
 
-                            exclusionDate = year_prefix + startRange[2] + startRange[1] + ii;
+
+                            exclusionDate = year_prefix + endRange[2] + startRange[1] + ii;
                             exclusionDates.push(exclusionDate);
                         }
                         for (i = 1; i <= parseInt(endRange[0]); i++) {
@@ -341,6 +345,8 @@ function tableLoaded(e){
 
                             ii = makeTwoDigits(ii);
                             endRange[1] = makeTwoDigits(endRange[1]);
+                            endRange[2] = makeTwoDigits(endRange[2]);
+
 
                             exclusionDate = year_prefix + endRange[2] + endRange[1] + ii;
                             exclusionDates.push(exclusionDate);
@@ -350,9 +356,11 @@ function tableLoaded(e){
                             ii = i.toString();
 
                             ii = makeTwoDigits(ii);
-                            startRange[1] = makeTwoDigits(startRange[1]);
 
-                            exclusionDate = year_prefix + startRange[2] + startRange[1] + ii;
+                            startRange[1] = makeTwoDigits(startRange[1]);
+                            endRange[2] = makeTwoDigits(endRange[2]);
+
+                            exclusionDate = year_prefix + endRange[2] + startRange[1] + ii;
                             exclusionDates.push(exclusionDate);
                         }
                     }
@@ -361,6 +369,7 @@ function tableLoaded(e){
                 exclusionDateDates = exclusionDate.split('.');
                 exclusionDateDates[0] = makeTwoDigits(exclusionDateDates[0]);
                 exclusionDateDates[1] = makeTwoDigits(exclusionDateDates[1]);
+                exclusionDateDates[2] = makeTwoDigits(exclusionDateDates[2]);
 
                 exclusionDate = year_prefix + exclusionDateDates[2] + exclusionDateDates[1] + exclusionDateDates[0];
                 exclusionDate = exclusionDate.trim();
@@ -421,12 +430,20 @@ function getElementsByTagName(element, tagName) {
 }
 
 function makeTwoDigits(number) {
+    if(!number)
+    {
+       alert(new Error().stack);
+    }
     number = number.trim();
     if (number.length < 2) {
         return '0' + number;
     }
+    if (number.length === 4)
+    {
+        return number[2] + number[3]
+    }
     return number;
 }
-
+//Error    at makeTwoDigits (chrome-extension://egggfnhegcafmnaklhgfbhdlecphmadk/src/popup.js:435:14)    at tableLoaded (chrome-extension://egggfnhegcafmnaklhgfbhdlecphmadk/src/popup.js:337:45)    at parseCalendar (chrome-extension://egggfnhegcafmnaklhgfbhdlecphmadk/src/popup.js:103:35)    at XMLHttpRequest.<anonymous> (chrome-extension://egggfnhegcafmnaklhgfbhdlecphmadk/src/popup.js:84:53)
 
 
