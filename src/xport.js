@@ -229,6 +229,11 @@ function extractData(courseData) {
     let end;
     let title;
     for (lesson in cookies_cour[courseId]) {
+        if (cookies_cour[courseId][lesson] >= courseData.lessons.length)
+        {
+            console.log("Some info was missing for course with ID " + courseId + ". Please verify this.")
+            continue;
+        }
         for (hour in courseData.lessons[cookies_cour[courseId][lesson]].hours) {
             try {
 
