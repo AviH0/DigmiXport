@@ -1,4 +1,4 @@
-var year = 2021; // NEED TO CHANGE THIS FOR NEXT YEAR
+var year = 2022; // NEED TO CHANGE THIS FOR NEXT YEAR
 var year_prefix = '20'; // Change if next century.
 var exclusionDates = [];
 var eventsForGoogle = [];
