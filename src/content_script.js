@@ -1,59 +1,28 @@
-var year = 2022; // NEED TO CHANGE THIS FOR NEXT YEAR
+var CALENDAR_INFO_REQUEST = 'getCalendarInfo';
+var LESSON_EVENTS_READY = 'gotCalendarInfo';
+
+
+
+// let year = 2022; // NEED TO CHANGE THIS FOR NEXT YEAR
+var year = ""
 var year_prefix = '20'; // Change if next century.
 var exclusionDates = [];
 var eventsForGoogle = [];
+var iCalString = "";
 var currentEventIndex = 0;
 var coursesAndSemesters = {};
 
 
-var dateDict = {
-    "סמסטר א": {
-        "יום א'": "SU",//"20191027",
-        "יום ב'": "MO",//"20191028",
-        "יום ג'": "TU",//"20191029",
-        "יום ד'": "WE",//"20191030",
-        "יום ה'": "TH",//"20191031",
-        "יום ו'": "FR"//"20191101"
-    },
-    "שנתי": {
-        "יום א'": "20191027",
-        "יום ב'": "20191028",
-        "יום ג'": "20191029",
-        "יום ד'": "20191030",
-        "יום ה'": "20191031",
-        "יום ו'": "20191101",
-        "יום ש'": ""
-    },
-    "סמסטר ב": {
-        "יום א'": "20200315",
-        "יום ב'": "20200316",
-        "יום ג'": "20200317",
-        "יום ד'": "20200318",
-        "יום ה'": "20200319",
-        "יום ו'": "20200320",
-        "יום ש'": ""
-    }
-};
-var semesterInformation = {
-    "סמסטר א": {
-        "start": "",
-        "end": "20200128"
-    },
-    "סמסטר ב": {
-        "start": "",
-        "end": "20200730"
-    },
-    "שנתי": {
-        "start": "",
-        "end": "20200128"
-    }
-};
-var courseSemesterToExamSemester = {
-    "סמסטר א": "סמסטר א",
-    "סמסטר ב": "סמסטר ב",
-    "שנתי": "סמסטר ב"
+var dateDict = {};
 
-}
+var semesterInformation = {};
+
+// var courseSemesterToExamSemester = {
+//     "סמסטר א": "סמסטר א",
+//     "סמסטר ב": "סמסטר ב",
+//     "שנתי": "סמסטר ב"
+//
+// }
 
 
 var lessonTypeDict = {
@@ -64,9 +33,47 @@ var lessonTypeDict = {
     "מעב": "מעבדה"
 };
 
+function recieve_academic_cal(calendar_info) {
+    semInfo = [];
+    for (inf in calendar_info.semesterInformation) {
+        semInfo.push(calendar_info.semesterInformation[inf]);
+    }
+    semesterInformation["סמסטר א"] = semInfo[0];
+    semesterInformation["סמסטר ב"] = semInfo[1];
+    semesterInformation["שנתי"] = semInfo[2];
 
+    exclusionDates = calendar_info.exclusionDates;
+    dateDict = calendar_info.dateDict;
+    return exportCal();
+}
+
+function retrieveWindowVariables(variables) {
+    var ret = {};
+
+    var scriptContent = "";
+    for (var i = 0; i < variables.length; i++) {
+        var currVariable = variables[i];
+        scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', " + currVariable + ");\n"
+    }
+
+    var script = document.createElement('script');
+    script.id = 'tmpScript';
+    script.appendChild(document.createTextNode(scriptContent));
+    (document.body || document.head || document.documentElement).appendChild(script);
+
+    for (var i = 0; i < variables.length; i++) {
+        var currVariable = variables[i];
+        ret[currVariable] = $("body").attr("tmp_" + currVariable);
+        $("body").removeAttr("tmp_" + currVariable);
+    }
+
+    $("#tmpScript").remove();
+
+    return ret;
+}
+year = retrieveWindowVariables(['year']).year;
 chrome.runtime.sendMessage(
-    {contentScriptQuery: 'getCalendarInfo'}, response => tableRecieved(response));
+    {contentScriptQuery: CALENDAR_INFO_REQUEST, year:year}, response => recieve_academic_cal(response));
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
@@ -78,7 +85,7 @@ chrome.runtime.onMessage.addListener(
             for (course in exams) {
                 var courseExams = {};
                 for (exam in exams[course]) {
-                    if (exams[course][exam].hasOwnProperty("null")){
+                    if (exams[course][exam].hasOwnProperty("null")) {
                         continue;
                     }
                     var wantedSemester = coursesAndSemesters[course].semester;
@@ -100,10 +107,10 @@ chrome.runtime.onMessage.addListener(
                         dateTimeStart = eDate + 'T' + exams[course][exam].time + ':00';
                         dateVar = new Date(dateTimeStart);
                         THREEHOURS = 10800000;
-                        ONEHOUR = THREEHOURS/3;
+                        ONEHOUR = THREEHOURS / 3;
                         length_of_exam = exams[course][exam].length * ONEHOUR;
                         endDateVar = new Date(dateVar.getTime() + length_of_exam);
-                        dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth()+1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes())+':00';
+                        dateTimeEnd = endDateVar.getFullYear() + '-' + makeTwoDigits(endDateVar.getMonth() + 1) + '-' + makeTwoDigits(endDateVar.getDate()) + 'T' + makeTwoDigits(endDateVar.getHours()) + ':' + makeTwoDigits(endDateVar.getMinutes()) + ':00';
                         summary = course_name + '(' + exams[course][exam].course + "): " + exams[course][exam].semester + exams[course][exam].moed;
                         courseExams[exams[course][exam].moed] = {
                             gEvent: {
@@ -151,7 +158,7 @@ chrome.runtime.onMessage.addListener(
                 // parsedCalendarFromReq.ics += result;
             }
             parsedCalendarFromReq.ics += "END:VCALENDAR";
-            if(!all_exam_times_set){
+            if (!all_exam_times_set) {
                 parsedCalendarFromReq['message'] = "Please note: some exams' hours have not yet been set.";
             }
             sendResponse(parsedCalendarFromReq);
@@ -159,68 +166,55 @@ chrome.runtime.onMessage.addListener(
         // return true;  // Will respond asynchronously.
     });
 
-function tableRecieved(packedStuff) {
+function notify_leeson_events_ready() {
+    chrome.runtime.sendMessage({
+        contentScriptQuery: LESSON_EVENTS_READY,
+        parsedCalendar: {
+            'ics': iCalString + "END:VCALENDAR",
+            'eventList': eventsForGoogle,
+            'courses': cookies_cour
+        }
+    });
 
-    semInfo = [];
-    for (inf in packedStuff.semesterInformation) {
-        semInfo.push(packedStuff.semesterInformation[inf]);
-    }
-    semesterInformation["סמסטר א"] = semInfo[0];
-    semesterInformation["סמסטר ב"] = semInfo[1];
-    semesterInformation["שנתי"] = semInfo[2];
-
-    exclusionDates = packedStuff.exclusionDates;
-    dateDict = packedStuff.dateDict;
-    return exportCal();
 }
 
-
 function exportCal() {
-    if (!document.documentURI.startsWith("https://www.digmi.org/huji/") &&!document.documentURI.startsWith("http://www.digmi.org/huji/")&&!document.documentURI.startsWith("http://digmi.org/huji/") &&!document.documentURI.startsWith("https://digmi.org/huji/")) {
+    if (!document.documentURI.startsWith("https://www.digmi.org/huji/") && !document.documentURI.startsWith("http://www.digmi.org/huji/") && !document.documentURI.startsWith("http://digmi.org/huji/") && !document.documentURI.startsWith("https://digmi.org/huji/")) {
         alert('Please Use Addon on https://www.digmi.org/huji/ .');
         return;
     }
     id = 0;
     cookies_cour = JSON.parse($.cookie(id + '_courses'));
-    var calendar;
-    calendar = "BEGIN:VCALENDAR\n";
-    calendar += "VERSION:2.0\n";
+
+    iCalString = "BEGIN:VCALENDAR\n";
+    iCalString += "VERSION:2.0\n";
     url_prefix = document.documentURI.match(/http[s]?:\/\/[w]*\.?/);
-    var i = 0;
-    var j = 0;
+    let i = 0;
+    let num_courses = 0;
+    for (c in cookies_cour) { num_courses++;}
     for (c in cookies_cour) {
         $.ajax({
             type: 'GET',
             url: url_prefix + 'digmi.org/huji/get_course.php?year=' + year + '&course=' + c,
             success: function (data) {
-                calendar += extractData(data);
+                extract_course_events(data);
                 i++;
-                if (i == j) {
-                    // window.open("data:text/calendar;charset=utf-8," + escape(calendar));
-                    // download_file("Calendar.ics", calendar + "END:VCALENDAR");
-                    chrome.runtime.sendMessage({contentScriptQuery: 'gotCalendarInfo',
-                        parsedCalendar: {
-                            'ics': calendar + "END:VCALENDAR",
-                            'eventList': eventsForGoogle,
-                            'courses': cookies_cour
-                        }
-                    });
-                    return;
-                    // return {'ics':calendar + "END:VCALENDAR", 'eventList':eventsForGoogle};
+                if (i === num_courses) {
+                    notify_leeson_events_ready()
                 }
             }
         });
-        j++;
+
     }
 
 }
 
 
-function extractData(courseData) {
-    var courseId = courseData.id;
-    var courseName = courseData.name;
-    var courseLect = cookies_cour[courseId]["שעור"];
-    var courseTA = cookies_cour[courseId]["תרג"];
+function extract_course_events(courseData) {
+    let courseId = courseData.id;
+    let courseName = courseData.name;
+    let courseLect = cookies_cour[courseId]["שעור"];
+    let courseTA = cookies_cour[courseId]["תרג"];
 
     let iCalEvent;
     iCalEvent = "";
@@ -229,8 +223,7 @@ function extractData(courseData) {
     let end;
     let title;
     for (lesson in cookies_cour[courseId]) {
-        if (cookies_cour[courseId][lesson] >= courseData.lessons.length)
-        {
+        if (cookies_cour[courseId][lesson] >= courseData.lessons.length) {
             console.log("Some info was missing for course with ID " + courseId + ". Please verify this.")
             continue;
         }
@@ -261,7 +254,7 @@ function extractData(courseData) {
                 }
 
                 lessonSemester = hours[hour].semester;
-                coursesAndSemesters[courseId] = { semester: lessonSemester, name: courseName};
+                coursesAndSemesters[courseId] = {semester: lessonSemester, name: courseName};
 
                 //date = translateDayToDate(hours[hour].day, hours[hour].semester);
                 date = dateDict[lessonSemester][hours[hour].day];
@@ -305,34 +298,23 @@ function extractData(courseData) {
                 currentEvent.start.dateTime = startDateForGoogle;
                 currentEvent.end.dateTime = endDateForGoogle;
 
-                iCalEvent += createIcalEvent(title, start, end, place, semesterInformation[lessonSemester].end, currentEvent);
+                iCalEvent += createEvent(title, start, end, place, semesterInformation[lessonSemester].end, currentEvent);
             } catch (e) {
                 console.error("Could not create event for course " + courseId + ", reason:\n" + e.message);
             }
         }
     }
-    // for (hour in courseData.lessons[courseTA].hours) {
-    //     hours = courseData.lessons[courseTA].hours;
-    //     date = translateDayToDate(hours[hour].day, hours[hour].semester);
-    //     timeInDay = hours[hour].hour.split('-');
-    //     startTime = timeInDay[0];
-    //     endTime = timeInDay[1];
-    //     place = hours[hour].place;
-    //     start = date + "T" + startTime.replace(':', '') + '00';
-    //     end = date + "T" + endTime.replace(':', '') + '00';
-    //     title = "תרגול: " + courseId + " -- " + courseName;
-    //     iCalEvent += createIcalEvent(title, start, end, place, endOfSemester[hours[hour].semester]);
-    // }
-    return iCalEvent;
+
+    iCalString += iCalEvent;
 }
 
 
-function translateDayToDate(day, semester) {
-    return dateDict[semester][day];
+// function translateDayToDate(day, semester) {
+//     return dateDict[semester][day];
+//
+// }
 
-}
-
-function createIcalEvent(title, start, end, place, endOfSemester, currentEvent) {
+function createEvent(title, start, end, place, endOfSemester, currentEvent) {
     // decode html entities in "place" string
     // place = $('<div>').html(place).text();
 
@@ -357,6 +339,8 @@ function createIcalEvent(title, start, end, place, endOfSemester, currentEvent) 
     currentEventIndex++;
     return result;
 }
+
+
 function makeTwoDigits(number) {
     number = number.toString().trim();
     if (number.length < 2) {
