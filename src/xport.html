@@ -2,28 +2,37 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>Title</title>
+
+    <meta charset="utf-8">
+    <title>DigmiXport</title>
+    <script src="parse_academic_calendar.js"></script>
+    <script src="ui.js"></script>
+    <script src="recieve_events.js"></script>
+    <script src="entry.js"></script>
+
+
+
 
 </head>
 <body>
-<title>Title</title>
-<button id="btn_save" title="Export" onclick="load()" name="Export">Export Digmi Calendar</button>
+<img src="icons/clock.png" alt="Digmi_logo">
+<strong>Export Digmi Calendar</strong>
+<label id="loading">Parsing Calendar Data, Please wait...</label>
+
+<label id="toggle_lessons_label" style="display: none"><input type="checkbox" id="toggle_lessons" style="display: none">Lesson events</label>
+<label id="toggle_exams_label" style="display: none"><input type="checkbox" id="toggle_exams" style="display: none">
+Exam events</label>
+<button id="btn_save" style="display: none">Download as ics file</button>
+
+<button id="authorize_button" style="display: none">Export to Google Calendar</button>
+
+<pre id="content" style="white-space: pre-wrap;"></pre>
+
+
+
+
+
 </body>
 
-<script type="text/javascript">
-
-
-    function load() {
-        browser.tabs.executeScript({'file': 'xport.js'});
-        // browser.tabs.executeScript({'file': 'jquery-3.4.1.min.js'});
-        // browser.tabs.executeScript({'file': 'http_ajax.googleapis.com_ajax_libs_jqueryui_1.8.18_jquery-ui.js'});
-        // browser.tabs.executeScript({'file': 'jquery.cookie.js'});
-        // browser.tabs.executeScript({'file': 'codebase/dhtmlxscheduler.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_pdf.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_serialize.js'});
-        // browser.tabs.executeScript({'file': 'codebase/ext/dhtmlxscheduler_tooltip.js'});
-        // browser.tabs.executeScript({'file': 'huji.js'});
-    }
-</script>
 
 </html>
