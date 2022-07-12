@@ -1,6 +1,7 @@
 const CALENDAR_INFO_REQUEST = 'getCalendarInfo';
 const ACADEMIC_CAL_URL = "https://academic-secretary.huji.ac.il/%D7%9C%D7%95%D7%97-%D7%A9%D7%A0%D7%94-%D7%90%D7%A7%D7%93%D7%9E%D7%99?tab-active=0"
-
+const ACADEMIC_SEC_URL = "https://academic-secretary.huji.ac.il"
+const SHNATON_LINK = "https://shnaton.huji.ac.il/";
 
 
 
@@ -11,25 +12,57 @@ function setupRequestListener()
         if (request.contentScriptQuery === CALENDAR_INFO_REQUEST) {
             year = request.year
             xhr = new XMLHttpRequest();
-            xhr.open('GET', ACADEMIC_CAL_URL);
-            xhr.addEventListener('loadend', result=>parseCalendar(sendResponse, xhr));
+            xhr.open('GET', ACADEMIC_SEC_URL);
+            xhr.addEventListener('loadend', result=>getCalendarLink(sendResponse, xhr));
             xhr.send();
             return true;  // Will respond asynchronously.
         }
 });
 }
 
+function getHebYear(sendResponse, xhr, calendarLinkHref)
+{
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(xhr.responseText, "text/html");
+    let heb_year = doc.querySelector('select#year').querySelector('[value*="' + year + '"]').getAttribute('label').trim();
 
-function parseCalendar(callback, xhr){
-    callback(parse_cal_dom(xhr.responseText));
+    // parse the calendar with the heb year
+    let calendarXhr = new XMLHttpRequest();
+    calendarXhr.open('GET', calendarLinkHref);
+    calendarXhr.addEventListener('loadend', result=>parseCalendar(heb_year, sendResponse, calendarXhr));
+    calendarXhr.send();
 }
 
-function parse_cal_dom(academic_cal_dom){
+function getCalendarLink(sendResponse, xhr) {
+    let parser = new DOMParser();
+
+    let doc = parser.parseFromString(xhr.responseText, "text/html");
+
+    // parse doc for link with inner text "לוח השנה האקדמית"
+    let calendarLink = Array.from(doc.querySelectorAll('a')).find(el => el.textContent === 'לוח השנה האקדמית');
+    if(!calendarLink)
+    {
+        alert("Could not find calendar link");
+        return;
+    }
+    let calendarLinkHref = calendarLink.getAttribute('href');
+    // get the calendar from the link and find heb year
+    let calendarXhr = new XMLHttpRequest();
+    calendarXhr.open('GET', SHNATON_LINK);
+    calendarXhr.addEventListener('loadend', result=>getHebYear(sendResponse, calendarXhr, calendarLinkHref));
+    calendarXhr.send();
+}
+
+function parseCalendar(heb_year, callback, xhr){
+    callback(parse_cal_dom(heb_year, xhr.responseText));
+}
+
+function parse_cal_dom(heb_year, academic_cal_dom){
 
     let parser = new DOMParser();
 
     let doc = parser.parseFromString(academic_cal_dom, "text/html");
-    let current_year_id = doc.querySelectorAll('.tab-links [class*=" first"]')[0].getElementsByTagName('a')[0].getAttribute('href').substr(1)
+    let current_year_id = Array.from(doc.querySelectorAll('a')).find(el => el.textContent === 'תשפ"ג').getAttribute('href').substr(1);
 
     tables = doc.getElementById(current_year_id).getElementsByTagName("table")
 
