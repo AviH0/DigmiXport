@@ -62,7 +62,7 @@ function parse_cal_dom(heb_year, academic_cal_dom){
     let parser = new DOMParser();
 
     let doc = parser.parseFromString(academic_cal_dom, "text/html");
-    let current_year_id = Array.from(doc.querySelectorAll('a')).find(el => el.textContent === 'תשפ"ג').getAttribute('href').substr(1);
+    let current_year_id = Array.from(doc.querySelectorAll('a')).find(el => el.textContent === heb_year).getAttribute('href').substr(1);
 
     tables = doc.getElementById(current_year_id).getElementsByTagName("table")
 
